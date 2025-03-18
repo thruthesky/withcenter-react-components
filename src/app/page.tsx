@@ -1,9 +1,26 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        make a text from ai
-      </main>
-    </div>
+    <>
+      <h2>Choose what you want to build:</h2>
+      <ul>
+        <li>
+          <Link href="/chat/chatgpt">ChatGPT</Link>
+        </li>
+        <li>
+          <Link href="/chat/dalle">DALL·E</Link>
+        </li>
+        <li>
+          <Link href="/chat/whisper">Whisper</Link>
+        </li>
+        <li>
+          <Link href="/chat/text-to-speech">Text to Speech</Link>
+        </li>
+        <li>
+          <Link href="/chat/text-to-image">Text to Image</Link>
+        </li>
+      </ul>
+    </>
   );
 }
