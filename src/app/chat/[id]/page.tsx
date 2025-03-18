@@ -18,8 +18,6 @@ export default function ChatPage({
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const message = formData.get("message") as string;
-    console.log("Message sent:", message);
-    // To generate text output, call generateContent with the text input
     const result = await model.current.generateContent(message);
 
     const response = result.response;
@@ -28,11 +26,7 @@ export default function ChatPage({
   }
   return (
     <>
-      <h2>Chat Page</h2>
       <p>Chat ID: {id}</p>
-      <p>Chat Name: {id}</p>
-      <p>Chat Type: {id}</p>
-
       <form onSubmit={onSubmit}>
         <input
           name="message"
