@@ -1,13 +1,9 @@
 "use client";
 
 import { use, useEffect, useRef, useState } from "react";
-import {
-  getVertexAI,
-  getGenerativeModel,
-  GenerativeModel,
-} from "firebase/vertexai";
+import { getVertexAI, getGenerativeModel, GenerativeModel } from "firebase/vertexai";
 import Markdown from "react-markdown";
-import remarkGfm from 'remark-gfm';
+import remarkGfm from "remark-gfm";
 
 export default function ChatPage({
   params,
@@ -91,8 +87,9 @@ export default function ChatPage({
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const message = formData.get("message") as string;
+
     console.log("Message sent:", message);
-    setResponse('');
+    setResponse("");
     // To generate text output, call generateContent with the text input
     const result = await model.current.generateContentStream(message);
     for await (const chunk of result.stream) {
@@ -101,18 +98,13 @@ export default function ChatPage({
       setResponse((v) => v + chunkText);
     }
 
-
     const res = await result.response;
     setResponse(res.text);
     console.log(res);
   }
   return (
     <>
-      <h2>Chat Page</h2>
       <p>Chat ID: {id}</p>
-      <p>Chat Name: {id}</p>
-      <p>Chat Type: {id}</p>
-
       <form onSubmit={onSubmit}>
         <input
           name="message"
@@ -123,8 +115,6 @@ export default function ChatPage({
       </form>
 
       {response && <Markdown remarkPlugins={[remarkGfm]}>{response}</Markdown>}
-
-
     </>
   );
 }
