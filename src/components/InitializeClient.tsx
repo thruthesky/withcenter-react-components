@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 // Import the functions you need from the SDKs you need
-import { getApp, initializeApp } from "firebase/app";
+import { FirebaseApp, getApp, initializeApp } from "firebase/app";
 
-export default function InitializeClient() {
+export default function InitializeClient({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   // TODO: Add SDKs for Firebase products that you want to use
   // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -19,12 +23,14 @@ export default function InitializeClient() {
     appId: "1:109766947030:web:adea06b4bee7a666239977",
   };
 
+  const [app, setApp] = useState<FirebaseApp | null>(null);
+
   useEffect(() => {
     // This is a placeholder for any client-side initialization logic you want to run
     console.log("Client-side initialization logic goes here");
     // Initialize Firebase
-    initializeApp(firebaseConfig);
+    setApp(initializeApp(firebaseConfig));
     console.log("Firebase initialized", getApp().name); // '[DEFAULT]'
   }, []);
-  return null;
+  return <>{app && children}</>;
 }
