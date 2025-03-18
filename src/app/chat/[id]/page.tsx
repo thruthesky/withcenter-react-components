@@ -24,6 +24,7 @@ export default function ChatPage({
   const chat = useRef({} as ChatSession);
 
   const [response, setResponse] = useState("");
+  // const [message, setMessage] = useState([]);
 
   useEffect(() => {
     model.current = getGenerativeModel(getVertexAI(), {
@@ -35,10 +36,10 @@ export default function ChatPage({
       <INSTRUCTIONS>
       To complete the task, you need to follow these steps:
       1. The user will provide what project he wants to build
-      2. Provide a list of features that the user can include in the project.
-      3. Ask the user if theres more feature he wants to include in the project.
+      2. Provide a list of features that the user must include in the project.
+      3. Ask the user if theres more feature he wants to include in the project. and list related features.
       4. Provide the total cost of the project.
-      5. Display the invoice to the user. must be in a markdown table.
+      5. Display the invoice to the user. must be in a markdown table. 
       6. If "PUBLISH INVOICE" is mentioned, response in json format with the invoice details.
       </INSTRUCTIONS>
 
@@ -85,125 +86,125 @@ export default function ChatPage({
           "duration": "5 days"
         },
         "to_do_list_app": {
-    "price": "100,000 WON",
-    "description": "A simple task manager with CRUD operations",
-    "duration": "3 days"
-  },
-  "weather_app": {
-    "price": "150,000 WON",
-    "description": "Fetch and display weather data using an API",
-    "duration": "4 days"
-  },
-  "calculator_app": {
-    "price": "80,000 WON",
-    "description": "A basic arithmetic calculator with a clean UI",
-    "duration": "2 days"
-  },
-  "blog_website": {
-    "price": "200,000 WON",
-    "description": "A simple blog with post creation and comments",
-    "duration": "5 days"
-  },
-  "recipe_app": {
-    "price": "180,000 WON",
-    "description": "A collection of recipes with search and filter functionality",
-    "duration": "4 days"
-  },
-  "expense_tracker": {
-    "price": "250,000 WON",
-    "description": "Track daily expenses with a summary dashboard",
-    "duration": "6 days"
-  },
-  "qr_code_generator": {
-    "price": "120,000 WON",
-    "description": "Generate QR codes for links or text input",
-    "duration": "3 days"
-  },
-  "portfolio_website": {
-    "price": "220,000 WON",
-    "description": "A personal portfolio with projects and contact info",
-    "duration": "5 days"
-  },
-  "e_commerce_website": {
-    "price": "500,000 WON",
-    "description": "A basic store with product listings, cart, and checkout",
-    "duration": "10 days"
-  },
-  "chat_app": {
-    "price": "400,000 WON",
-    "description": "Real-time messaging with Firebase or WebSockets",
-    "duration": "8 days"
-  },
-  "news_aggregator": {
-    "price": "300,000 WON",
-    "description": "Pull news from APIs and display by category",
-    "duration": "7 days"
-  },
-  "habit_tracker": {
-    "price": "280,000 WON",
-    "description": "Track daily habits and show progress visually",
-    "duration": "6 days"
-  },
-  "movie_database_app": {
-    "price": "350,000 WON",
-    "description": "Fetch movie data from an API and allow user ratings",
-    "duration": "7 days"
-  },
-  "event_booking_app": {
-    "price": "450,000 WON",
-    "description": "Book and manage events with seat selection",
-    "duration": "9 days"
-  },
-  "fitness_tracker": {
-    "price": "400,000 WON",
-    "description": "Log workouts, set goals, and visualize progress",
-    "duration": "8 days"
-  },
-  "online_quiz_app": {
-    "price": "300,000 WON",
-    "description": "A trivia quiz with a timer and scoring system",
-    "duration": "6 days"
-  },
-  "ai_powered_chatbot": {
-    "price": "700,000 WON",
-    "description": "A chatbot that uses NLP for customer service",
-    "duration": "12 days"
-  },
-  "stock_market_tracker": {
-    "price": "600,000 WON",
-    "description": "Display real-time stock data with historical charts",
-    "duration": "10 days"
-  },
-  "social_media_platform": {
-    "price": "1,200,000 WON",
-    "description": "Users can post, like, comment, and follow others",
-    "duration": "20 days"
-  },
-  "task_management_app": {
-    "price": "900,000 WON",
-    "description": "Drag-and-drop task management with team collaboration",
-    "duration": "15 days"
-  },
-  "streaming_service": {
-    "price": "1,500,000 WON",
-    "description": "A video/audio streaming platform with user subscriptions",
-    "duration": "25 days"
-  },
-  "real_estate_app": {
-    "price": "1,000,000 WON",
-    "description": "List, filter, and book real estate properties",
-    "duration": "18 days"
-  },
-  "ai_powered_resume_builder": {
-    "price": "800,000 WON",
-    "description": "Generate resumes based on user input and AI suggestions",
-    "duration": "14 days"
-  },
-  "virtual_classroom": {
-    "price": "1,300,000 WON",
-    "description": "Online learning platform with video calls and quizzes",
-    "duration": "22 days"
-  }
+          "price": "100,000 WON",
+          "description": "A simple task manager with CRUD operations",
+          "duration": "3 days"
+        },
+        "weather_app": {
+          "price": "150,000 WON",
+          "description": "Fetch and display weather data using an API",
+          "duration": "4 days"
+        },
+        "calculator_app": {
+          "price": "80,000 WON",
+          "description": "A basic arithmetic calculator with a clean UI",
+          "duration": "2 days"
+        },
+        "blog_website": {
+          "price": "200,000 WON",
+          "description": "A simple blog with post creation and comments",
+          "duration": "5 days"
+        },
+        "recipe_app": {
+          "price": "180,000 WON",
+          "description": "A collection of recipes with search and filter functionality",
+          "duration": "4 days"
+        },
+        "expense_tracker": {
+          "price": "250,000 WON",
+          "description": "Track daily expenses with a summary dashboard",
+          "duration": "6 days"
+        },
+        "qr_code_generator": {
+          "price": "120,000 WON",
+          "description": "Generate QR codes for links or text input",
+          "duration": "3 days"
+        },
+        "portfolio_website": {
+          "price": "220,000 WON",
+          "description": "A personal portfolio with projects and contact info",
+          "duration": "5 days"
+        },
+        "e_commerce_website": {
+          "price": "500,000 WON",
+          "description": "A basic store with product listings, cart, and checkout",
+          "duration": "10 days"
+        },
+        "chat_app": {
+          "price": "400,000 WON",
+          "description": "Real-time messaging with Firebase or WebSockets",
+          "duration": "8 days"
+        },
+        "news_aggregator": {
+          "price": "300,000 WON",
+          "description": "Pull news from APIs and display by category",
+          "duration": "7 days"
+        },
+        "habit_tracker": {
+          "price": "280,000 WON",
+          "description": "Track daily habits and show progress visually",
+          "duration": "6 days"
+        },
+        "movie_database_app": {
+          "price": "350,000 WON",
+          "description": "Fetch movie data from an API and allow user ratings",
+          "duration": "7 days"
+        },
+        "event_booking_app": {
+          "price": "450,000 WON",
+          "description": "Book and manage events with seat selection",
+          "duration": "9 days"
+        },
+        "fitness_tracker": {
+          "price": "400,000 WON",
+          "description": "Log workouts, set goals, and visualize progress",
+          "duration": "8 days"
+        },
+        "online_quiz_app": {
+          "price": "300,000 WON",
+          "description": "A trivia quiz with a timer and scoring system",
+          "duration": "6 days"
+        },
+        "ai_powered_chatbot": {
+          "price": "700,000 WON",
+          "description": "A chatbot that uses NLP for customer service",
+          "duration": "12 days"
+        },
+        "stock_market_tracker": {
+          "price": "600,000 WON",
+          "description": "Display real-time stock data with historical charts",
+          "duration": "10 days"
+        },
+        "social_media_platform": {
+          "price": "1,200,000 WON",
+          "description": "Users can post, like, comment, and follow others",
+          "duration": "20 days"
+        },
+        "task_management_app": {
+          "price": "900,000 WON",
+          "description": "Drag-and-drop task management with team collaboration",
+          "duration": "15 days"
+        },
+        "streaming_service": {
+          "price": "1,500,000 WON",
+          "description": "A video/audio streaming platform with user subscriptions",
+          "duration": "25 days"
+        },
+        "real_estate_app": {
+          "price": "1,000,000 WON",
+          "description": "List, filter, and book real estate properties",
+          "duration": "18 days"
+        },
+        "ai_powered_resume_builder": {
+          "price": "800,000 WON",
+          "description": "Generate resumes based on user input and AI suggestions",
+          "duration": "14 days"
+        },
+        "virtual_classroom": {
+          "price": "1,300,000 WON",
+          "description": "Online learning platform with video calls and quizzes",
+          "duration": "22 days"
+        },
       </DATA>      
 
       `,
