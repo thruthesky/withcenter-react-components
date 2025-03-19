@@ -6,12 +6,7 @@ import { FirebaseApp, getApp, initializeApp } from "firebase/app";
 import { firebaseConfig } from "@/keys/keys";
 
 
-export default function InitializeClient({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-
+export default function InitializeClient({ children }: { children: React.ReactNode }) {
 
   const [app, setApp] = useState<FirebaseApp | null>(null);
   useEffect(() => {
