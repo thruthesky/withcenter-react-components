@@ -1,18 +1,16 @@
 "use client";
 
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getVertexAI, getGenerativeModel, GenerativeModel, ChatSession } from "firebase/vertexai";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useSearchParams } from "next/navigation";
 
-export default function ChatPage({
-  params,
-}: Readonly<{
-  params: Promise<{
-    id: string;
-  }>;
-}>) {
-  const { id } = use(params);
+export default function ChatPage() {
+  const params = useSearchParams();
+  const type = params.get("type");
+  const ask = params.get("ask");
+
   const [prompt, setPrompt] = useState("");
   const model = useRef({} as GenerativeModel);
 
@@ -27,6 +25,11 @@ export default function ChatPage({
       systemInstruction: `
       You are a IT Consultant Specialized on making invoices for web and app development.
       You need to generate a professional Invoice with details features, including the name of the project, the features included, the price and the duration of the project.
+      Always generate the invoice in a markdown table format and improve the invocie continuously based on the user feedback.
+      Expected user input may be "I want to build a social media app" or "I want to build a chat app" or "I want to build a shopping mall" or "I want to build a game app". And the user may also provide a list of features that he wants to include in the project. You need to determine the project type based on the user input and provide a list of features that the user must include in the project. You also need to ask the user if there are more features he wants to include in the project and list related features. Finally, you need to provide the feature summary, price and working days for building it on each feature on the table and at the bottom of the table, add the total cost of the project including total workign days and display the invoice to the user in a markdown table format.
+      Consider yourself as a profile web or app developer and you are providing the user with a list of features that he must include in the project. You also need to ask the user if there are more features he wants to include in the project and list related features. You may also ask the user if he wants to have a fine UI design or a simple UI design. You also need to provide the feature summary, price and working days for building it on each feature on the table and at the bottom of the table, add the total cost of the project including total workign days and display the invoice to the user in a markdown table format. If the user asks for design file, you need to provide the price and the summary like "All the original desigin files will be provided in a zip file" and the working days will be set to 0.
+      Always generate the response in a markdown table format of the invoice including the feature, description, price and duration of the project. The table should be well formatted and easy to read. The table should have a header with the following columns: Feature, Description, Price, Duration. The table should also have a footer with the total cost of the project including total working days. 
+
       
       <INSTRUCTIONS>
       To complete the task, you need to follow these steps:
@@ -34,8 +37,7 @@ export default function ChatPage({
       2. Provide a list of features that the user must include in the project.
       3. Ask the user if theres more feature he wants to include in the project. and list related features.
       4. Provide the total cost of the project.
-      5. Display the invoice to the user. must be in a markdown table. 
-      6. If "PUBLISH INVOICE" is mentioned, response in json format with the invoice details.
+      5. Display the invoice to the user. must be in a markdown table.
       </INSTRUCTIONS>
 
       <DATA>
@@ -80,6 +82,122 @@ export default function ChatPage({
           "description": "Send notifications to users",
           "duration": "5 days"
         },
+        "Image upload": {
+          "price": 150,000WON,
+          "description": "Allow users to upload images",
+          "duration": "2 days"
+        },
+        "Image gallery": {
+          "price": 200,000WON,
+          "description": "Allow users to view images",
+          "duration": "3 days"
+        },
+        "Image editing": {
+          "price": 300,000WON,
+          "description": "Allow users to edit images",
+          "duration": "5 days"
+        },
+        "Video upload": {
+          "price": 150,000WON,
+          "description": "Allow users to upload videos",
+          "duration": "2 days"
+        },
+        "Video gallery": {
+          "price": 200,000WON,
+          "description": "Allow users to view videos",
+          "duration": "3 days"
+        },
+        "Audio upload": {
+          "price": 150,000WON,
+          "description": "Allow users to upload audio",
+          "duration": "2 days"
+        },
+        "Audio gallery": {
+          "price": 200,000WON,
+          "description": "Allow users to view audio",
+          "duration": "3 days"
+        },
+        "File upload": {
+          "price": 150,000WON,
+          "description": "Allow users to upload files",
+          "duration": "2 days"
+        },
+        "File gallery": {
+          "price": 200,000WON,
+          "description": "Allow users to view files",
+          "duration": "3 days"
+        },
+        "Follow system": {
+          "price": 250,000WON,
+          "description": "Allow users to follow each other",
+          "duration": "5 days"
+        },
+        "Like system": {
+          "price": 250,000WON,
+          "description": "Allow users to like each other's posts",
+          "duration": "5 days"
+        },
+        "Comment system": {
+          "price": 250,000WON,
+          "description": "Allow users to comment on each other's posts",
+          "duration": "5 days"
+        },
+        "Post system": {
+          "price": 250,000WON,
+          "description": "Allow users to post each other's posts",
+          "duration": "5 days"
+        },
+        "Search system": {
+          "price": 250,000WON,
+          "description": "Allow users to search each other's posts",
+          "duration": "5 days"
+        },
+        "Filter system": {
+          "price": 250,000WON,
+          "description": "Allow users to filter each other's posts",
+          "duration": "5 days"
+        },
+        "Feed system": {
+          "price": 250,000WON,
+          "description": "Allow users to view each other's posts",
+          "duration": "5 days"
+        },
+        "Profile system": {
+          "price": 250,000WON,
+          "description": "Allow users to view each other's profiles",
+          "duration": "5 days"
+        },
+        "Settings system": {
+          "price": 250,000WON,
+          "description": "Allow users to view each other's settings",
+          "duration": "5 days"
+        },
+        "Sharing profile": {
+          "price": 250,000WON,
+          "description": "Allow users to share each other's profiles",
+          "duration": "5 days"
+        },
+        "Sharing post": {
+          "price": 250,000WON,
+          "description": "Allow users to share each other's posts",
+          "duration": "5 days"
+        },
+        "Sharing image": {
+          "price": 250,000WON,
+          "description": "Allow users to share each other's images",
+          "duration": "5 days"
+        },
+        "Sharing video": {
+          "price": 250,000WON,
+          "description": "Allow users to share each other's videos",
+          "duration": "5 days"
+        },
+        "Sharing audio": {
+          "price": 250,000WON,
+          "description": "Allow users to share each other's audio",
+          "duration": "5 days"
+        },
+
         "to_do_list_app": {
           "price": "100,000 WON",
           "description": "A simple task manager with CRUD operations",
@@ -200,11 +318,38 @@ export default function ChatPage({
           "description": "Online learning platform with video calls and quizzes",
           "duration": "22 days"
         },
+        "Simple website": {
+          "price": "100,000 WON",
+          "description": "A simple website with basic features",
+          "duration": "3 days"
+        },
+        "Simple UI design": {
+          "price": "100,000 WON",
+          "description": "A simple UI design with basic features",
+          "duration": "3 days"
+        },
+        "Fine UI design": {
+          "price": "200,000 WON",
+          "description": "A fine UI design with basic features",
+          "duration": "5 days"
+        },
+        "Design file": {
+          "price": "500,000 WON",
+          "description": "A design file with basic features",
+          "duration": "0 days"
+        },
       </DATA>      
-
       `,
     });
     chat.current = model.current.startChat();
+
+    if (ask) {
+      submitPrompt(ask);
+    } else if (type) {
+      const p = "I want to build a " + type;
+      setPrompt(p);
+      submitPrompt(p);
+    }
   }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -214,7 +359,12 @@ export default function ChatPage({
 
     console.log("Message sent:", message);
     setResponse("");
-    setPrompt("");
+    // setPrompt("");
+
+    await submitPrompt(message);
+  }
+
+  async function submitPrompt(message: string) {
     // To generate text output, call generateContent with the text input
     const result = await chat.current.sendMessageStream(message);
     for await (const chunk of result.stream) {
@@ -229,7 +379,6 @@ export default function ChatPage({
   }
   return (
     <>
-      <p>Chat ID: {id}</p>
       <form onSubmit={onSubmit}>
         <input
           name="message"
