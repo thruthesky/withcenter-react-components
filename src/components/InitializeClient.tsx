@@ -16,10 +16,7 @@ export default function InitializeClient({
 
 export default function InitializeClient({ children }: Readonly<{ children: React.ReactNode }>) {
   const [app, setApp] = useState<FirebaseApp | null>(null);
-<<<<<<< HEAD
 
-=======
->>>>>>> f35ac89bbf9417436738bc45e7dc91f7a979cdf1
   useEffect(() => {
     // This is a placeholder for any client-side initialization logic you want to run
     console.log("Client-side initialization logic goes here");
