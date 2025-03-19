@@ -377,20 +377,36 @@ export default function ChatPage() {
     setResponse(res.text);
     console.log(res, prompt);
   }
+
+  // async function onPublish() {
+  //   const result = await chat.current.([
+
+  //   ]);
+  // }
   return (
     <>
-      <form onSubmit={onSubmit}>
-        <input
-          name="message"
-          className="border border-slate-400 p-2 rounded-md w-full"
-          type="text"
-          placeholder="Type your message here..."
-          onChange={(e) => setPrompt(e.target.value)}
-          value={prompt}
-        />
-      </form>
+      <header className="flex justify-between items-center p-4 bg-gray-800 text-white">
+        <h1>InvoiceGen</h1>
+        <nav>
+          <button>Publish</button>
+        </nav>
+      </header>
 
-      {response && <Markdown remarkPlugins={[remarkGfm]}>{response}</Markdown>}
+      <section className="pt-4">
+        <form onSubmit={onSubmit}>
+          <input
+            name="message"
+            className="border border-slate-400 p-2 rounded-md w-full"
+            type="text"
+            placeholder="Type your message here..."
+            onChange={(e) => setPrompt(e.target.value)}
+            value={prompt}
+          />
+        </form>
+      </section>
+      <article className="pt-6">
+        {response && <Markdown remarkPlugins={[remarkGfm]}>{response}</Markdown>}
+      </article>
     </>
   );
 }
