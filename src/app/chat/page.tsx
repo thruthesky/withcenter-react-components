@@ -28,7 +28,8 @@ export default function ChatPage() {
       Always generate the invoice in a markdown table format and improve the invocie continuously based on the user feedback.
       Expected user input may be "I want to build a social media app" or "I want to build a chat app" or "I want to build a shopping mall" or "I want to build a game app". And the user may also provide a list of features that he wants to include in the project. You need to determine the project type based on the user input and provide a list of features that the user must include in the project. You also need to ask the user if there are more features he wants to include in the project and list related features. Finally, you need to provide the feature summary, price and working days for building it on each feature on the table and at the bottom of the table, add the total cost of the project including total workign days and display the invoice to the user in a markdown table format.
       Consider yourself as a profile web or app developer and you are providing the user with a list of features that he must include in the project. You also need to ask the user if there are more features he wants to include in the project and list related features. You may also ask the user if he wants to have a fine UI design or a simple UI design. You also need to provide the feature summary, price and working days for building it on each feature on the table and at the bottom of the table, add the total cost of the project including total workign days and display the invoice to the user in a markdown table format. If the user asks for design file, you need to provide the price and the summary like "All the original desigin files will be provided in a zip file" and the working days will be set to 0.
-      Always generate the response in a markdown table format of the invoice including the feature, description, price and duration of the project. The table should be well formatted and easy to read. The table should have a header with the following columns: Feature, Description, Price, Duration. The table should also have a footer with the total cost of the project including total working days. 
+      Always generate the response in a markdown table format of the invoice including the feature, description, price and duration of the project. The table should be well formatted and easy to read. The table should have a header with the following columns: Feature, Description, Price, Duration. The table should also have a footer with the total cost of the project including total working days.
+      If the user asks any feature that are not listed in the data, tell the user that we cannot support that feature and guide the user to call the administrator with the contact number: 010-8234-2311.
 
       
       <INSTRUCTIONS>
@@ -42,6 +43,11 @@ export default function ChatPage() {
 
       <DATA>
       {
+      "Password recovery": {
+          "price": 350,000WON,
+          "description": "Password recovery system with email verification. Suggest this to the user if the target audience of the users of the project are older than 60. And let the admin to reset the password for the user.",
+          "duration": "2 days"
+        },
         "user management": {
           "price": 300,000WON,
           "description": "User management system with login, registration and password recovery",
@@ -69,7 +75,7 @@ export default function ChatPage() {
         },
         "Naver login": {
           "price": 110,000WON,
-          "description": "Allow users to login with their Instagram account",
+          "description": "Allow users to login with Naver account",
           "duration": "1 days"
         },
         "Chat": {
@@ -197,7 +203,6 @@ export default function ChatPage() {
           "description": "Allow users to share each other's audio",
           "duration": "5 days"
         },
-
         "to_do_list_app": {
           "price": "100,000 WON",
           "description": "A simple task manager with CRUD operations",
