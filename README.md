@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Invoice Generator
 
-## Getting Started
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- [AI Invoice Generator](#ai-invoice-generator)
+  - [TODOs](#todos)
+  - [Reference](#reference)
+    - [Gemini with Vertex AI](#gemini-with-vertex-ai)
+    - [Genkit AI](#genkit-ai)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## TODOs
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+- [ ] Give a little more UI improvement.
 
-To learn more about Next.js, take a look at the following resources:
+- [ ] When user add more prompts, keep the previous result of the invoce and improve it.
+  - Continious improvement of the invoice.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [ ] Ask the AI to generate the result in English or Korean.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [ ] Add way more system prompts. With more functionalities.
+  - google login, facebook long, kakaotalk login, naver login, phone number login, email/password login.
+  - forum functionality
+  - blog functinonality
+  - chat functionality
+  - follow functionality
+  - feed functionality
+  - like functionality
+  - comment functionality
+  - report functionality
+  - block functionality
+  - search functionality
+  - research functionality
+  - admin dashboard functionality
+  - meetup functionality
+  - dating functionality
+  - search users functionality
+  - search users based on geo ip functionality
+  - vector search contents functionality
+  - shopping functionality
+  - shopping cart functionality
+  - payment functionality
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Reference
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+### Gemini with Vertex AI
+
+- Office site:
+https://firebase.google.com/docs/vertex-ai/models
+
+
+### Genkit AI
+
+- Office site:
+https://firebase.google.com/docs/genkit/plugins/google-genai
+
+
+- Good YouTuBe:
+https://www.youtube.com/watch?v=3p1P5grjXIQ
+
+
+- Persistent Chat Session:
+https://firebase.google.com/docs/genkit/chat
