@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { getVertexAI, getGenerativeModel, GenerativeModel, ChatSession } from "firebase/vertexai";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import {
   INVOICE_SCHEMA,
@@ -13,6 +13,7 @@ import {
 } from "../config";
 
 import styles from "./page.module.css";
+import { useInvoiceSetData } from "@/components/ContextProvider";
 
 
 interface ChatHistory {
@@ -21,6 +22,8 @@ interface ChatHistory {
 }
 
 export default function ChatPage() {
+  const router = useRouter();
+  const setInvoice = useInvoiceSetData();
 
   const params = useSearchParams();
   const type = params.get("type");
@@ -54,14 +57,14 @@ export default function ChatPage() {
       } else if (type) {
         const p = "I want to build a " + type;
         console.log("type::", p);
-        setPrompt(p);
+        // setPrompt(p);
         submitPrompt(p);
       }
       initialized.current = true;
     }
   }, []);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const message = formData.get("message") as string;
@@ -73,7 +76,7 @@ export default function ChatPage() {
     await submitPrompt(message);
   }
 
-  async function submitPrompt(message: string) {
+  async function submitPrompt(message: string): Promise<void> {
     setChunck("");
     // To generate text output, call generateContent with the text input
     const userPrompt: ChatHistory = { role: "user", text: message };
@@ -95,29 +98,9 @@ export default function ChatPage() {
     setHistory((v) => [{ role: "model", text: modelRes }, ...v]);
   }
 
-  async function onPublish() {
-    setResponse("");
-
-    const publishInvoiceModel = getGenerativeModel(getVertexAI(), {
-      model: "gemini-2.0-flash",
-      systemInstruction: SYSTEM_INSTRUCTION,
-      generationConfig: {
-        responseMimeType: "application/json",
-        responseSchema: INVOICE_SCHEMA,
-      }
-    });
 
 
-    console.log("publishInvoiceModel::", await chat.current.getHistory());
-    const publishInvoiceChat = publishInvoiceModel.startChat({
-      history: await chat.current.getHistory(),
-    });
-    const result = await publishInvoiceChat.sendMessage("Generate the invoice to parsable JSON with the project,invoice and total. Reply with just the JSON data. Do not include any other text. The invoice should be in a JSON format.");
-    console.log("result::invoice", result);
-    setResponse(result.response.text());
-  }
-
-  async function getFinalizeInvoice() {
+  async function getFinalizeInvoice(): Promise<string> {
     // To generate text output, call generateContent with the text input
     const finalizedInvoiceChat = model.current.startChat({
       history: await chat.current.getHistory(),
@@ -130,7 +113,7 @@ export default function ChatPage() {
     return result.response.text();
   }
 
-  async function onPublishGenerateJson() {
+  async function onGenerateJson(): Promise<void> {
     setJsonInvoice("");
     // const history = await chat.current.getHistory();
     // const lastMessage = history[history.length - 1].parts.reduce((acc, part) => acc + part.text, "");
@@ -152,7 +135,26 @@ export default function ChatPage() {
     setJsonInvoice(res);
   }
 
-  async function onReset() {
+  async function onPublish() {
+
+    const finalizedInvoice = await getFinalizeInvoice();
+    console.log("finalized::", finalizedInvoice);
+    const publishInvoiceModel = getGenerativeModel(getVertexAI(), {
+      model: "gemini-2.0-flash",
+      systemInstruction: SYSTEM_INSTRUCTION,
+      generationConfig: {
+        responseMimeType: "application/json",
+        responseSchema: INVOICE_SCHEMA,
+      }
+    });
+    const result = await publishInvoiceModel.generateContent(finalizedInvoice);
+    const res = result.response.text();
+    console.log("res::", res);
+    setInvoice(res);
+    router.push('/invoice');
+  }
+
+  async function onReset(): Promise<void> {
     setResponse("");
     setChunck("");
     setHistory([]);
@@ -168,11 +170,10 @@ export default function ChatPage() {
         <nav className="flex gap-3">
 
           <button className="button" onClick={onReset}>Reset</button>
+
+          <button className="button" onClick={onGenerateJson}>Get JSON</button>
+
           <button className="button" onClick={onPublish}>Publish</button>
-
-          <button className="button" onClick={onPublishGenerateJson}>JSON</button>
-
-
         </nav>
       </header>
       <section className={`p-5 ${styles.chatMessages}`}>

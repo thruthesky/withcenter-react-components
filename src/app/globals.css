@@ -37,7 +37,7 @@ input {
   @apply rounded-md;
 }
 
-button {
+button, .button {
   background: var(--button-background);
   color: var(--button-foreground);
   border: none;
