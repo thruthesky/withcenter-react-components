@@ -23,7 +23,7 @@ export default function Home() {
 
       <h2>Choose what you want to build:</h2>
 
-      <nav>
+      <nav className="flex gap-3">
         <button onClick={() => openChat({ type: "social-app" })}>Social app</button>
         <button onClick={() => openChat({ type: "chat-app" })}>Chat app</button>
         <button onClick={() => openChat({ type: "shopping-mall-app" })}>Shopping mall</button>
