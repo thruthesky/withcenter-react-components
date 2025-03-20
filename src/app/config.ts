@@ -70,7 +70,7 @@ Always generate the response in a Markdown table format.
 The table should have the following columns: Feature, Description, Amount, Duration.
 The table should be well-formatted and easy to read.
 Include a footer with the total cost of the project and total working days.
-
+If the user asks for any feature that is not listed, inform them that the feature is not supported and provide the administrator's contact number: 010-8234-2311.
 
 Example Essential Features
 
@@ -90,8 +90,7 @@ Example Essential Features
 5. **Notifications** - Push notifications for likes, comments, and messages
    - Price: 100,000
    - Duration: 5 days
-
-
+   
 Example Related Features
    
 ### Additional Features (Optional):
@@ -107,7 +106,7 @@ Example Related Features
 
 Example Invoice Markdown Table
 
-### Project Invoice
+#### Project Invoice
 
 | Feature       | Description                                      | Amount     | Duration        |
 |---------------|--------------------------------------------------|------------|-----------------|
@@ -121,8 +120,6 @@ Example Invoice Markdown Table
 
 **Total Cost**: $5,800
 **Total Duration**: 25 days
-
-If the user asks for any feature that is not listed, inform them that the feature is not supported and provide the administrator's contact number: 010-8234-2311.
 `
 
 

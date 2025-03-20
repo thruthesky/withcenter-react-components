@@ -11,6 +11,14 @@ import {
   SYSTEM_INSTRUCTION,
 } from "../config";
 
+import styles from "./page.module.css";
+
+
+interface ChatHistory {
+  role: string;
+  text: string;
+}
+
 export default function ChatPage() {
   const params = useSearchParams();
   const type = params.get("type");
@@ -25,6 +33,8 @@ export default function ChatPage() {
   const [jsonInvoice, setJsonInvoice] = useState("");
 
   const initialized = useRef(false);
+
+  const [history, setHistory] = useState<ChatHistory[]>([]);
 
   useEffect(() => {
     if (!initialized.current) {
@@ -64,23 +74,23 @@ export default function ChatPage() {
   async function submitPrompt(message: string) {
     setChunck("");
     // To generate text output, call generateContent with the text input
+    const userPrompt: ChatHistory = { role: "user", text: message };
+    setHistory((v) => [userPrompt, ...v]);
     const result = await chat.current.sendMessageStream(`
       ${message}
-
       <RECAP>
       Please always include the invoice in table format at the end. Also Suggested additional features for the app that are not in the invoice yet. Please use markdown format for the invoice. but dont add code block \'\'\'markdown"
       </RECAP>
-      
       `);
+    let modelRes = ""
     for await (const chunk of result.stream) {
       const chunkText = chunk.text();
+      modelRes += chunkText;
       console.log(chunkText);
       setChunck((v) => v + chunkText);
     }
-
-    // const res = await result.response;
-    // setResponse(res.text);
-    // console.log("res::", res, "mark down::", prompt);
+    setChunck('');
+    setHistory((v) => [{ role: "model", text: modelRes }, ...v]);
   }
 
   async function onPublish() {
@@ -105,38 +115,99 @@ export default function ChatPage() {
     setResponse(result.response.text());
   }
 
+  async function getFinalizeInvoice() {
+    // To generate text output, call generateContent with the text input
+    const finalizedInvoiceChat = model.current.startChat({
+      history: await chat.current.getHistory(),
+    });
+
+    const result = await finalizedInvoiceChat.sendMessage(`
+      Finalized the invoice in table format. Please use markdown format for the invoice. but dont add code block \'\'\'markdown".
+      `);
+
+    return result.response.text();
+  }
 
   async function onPublishGenerateJson() {
     setJsonInvoice("");
-    const history = await chat.current.getHistory();
-    const lastMessage = history[history.length - 1].parts.reduce((acc, part) => acc + part.text, "");
-    console.log("lastMessage::", lastMessage);
+    // const history = await chat.current.getHistory();
+    // const lastMessage = history[history.length - 1].parts.reduce((acc, part) => acc + part.text, "");
+    // console.log("lastMessage::", lastMessage);
+
+    const finalizedInvoice = await getFinalizeInvoice();
+    console.log("finalized::", finalizedInvoice);
     const publishInvoiceModel = getGenerativeModel(getVertexAI(), {
       model: "gemini-2.0-flash",
       systemInstruction: SYSTEM_INSTRUCTION,
       generationConfig: {
         responseMimeType: "application/json",
         responseSchema: INVOICE_SCHEMA,
-        // temperature: 0.1,
       }
     });
-    const result = await publishInvoiceModel.generateContent(lastMessage);
+    const result = await publishInvoiceModel.generateContent(finalizedInvoice);
     const res = result.response.text();
     console.log("res::", res);
     setJsonInvoice(res);
   }
+
+  async function onReset() {
+    setResponse("");
+    setChunck("");
+    setHistory([]);
+    setPrompt("");
+    setJsonInvoice("");
+    chat.current = model.current.startChat();
+    console.log("chat::", await chat.current.getHistory());
+  }
   return (
-    <>
+    <section className="h-screen flex flex-col gap-4">
       <header className="flex justify-between items-center p-4 bg-gray-800 text-white">
         <h1>InvoiceGen</h1>
         <nav className="flex gap-3">
+
+          <button className="button" onClick={onReset}>Reset</button>
           <button className="button" onClick={onPublish}>Publish</button>
 
           <button className="button" onClick={onPublishGenerateJson}>JSON</button>
         </nav>
       </header>
+      <section className={`p-5 ${styles.chatMessages}`}>
+        {jsonInvoice && (
+          <data className="pt-6">
+            <h2 className="h2">JSON data</h2>
+            <div className="max-w-none">
+              <Markdown remarkPlugins={[remarkGfm]}>{jsonInvoice}</Markdown>
+            </div>
+          </data>)}
+        {response && (
+          <article className="pt-6">
+            <h2 className="h2">Response data</h2>
+            <div className="max-w-none">
+              <Markdown remarkPlugins={[remarkGfm]}>{response}</Markdown>
+            </div>
+          </article>)}
 
-      <section className="pt-4">
+        {chunk && (
+          <article className="flex">
+            <data className="bg-green-100 p-4 rounded-md mb-4 w-11/12">
+              <Markdown remarkPlugins={[remarkGfm]}>{chunk}</Markdown>
+            </data>
+          </article>)}
+        {
+          history.length > 0 && history.map((content, index) => (
+            <article key={index} className={`flex flex-col`}>
+              <h3 className={`flex text-sm text-gray-500 ${content.role === "user" && " justify-end"}`}>{content.role === "user" ? "You" : "Ai"}</h3>
+              <section key={index} className={`flex  ${content.role === "user" && " justify-end"}`} >
+                <data className={`${content.role === "user" ? "bg-blue-100 max-w-11/12" : "bg-green-100 w-11/12"} p-4 rounded-md mb-4`}>
+                  <Markdown remarkPlugins={[remarkGfm]}>{content.text}</Markdown>
+                </data>
+              </section>
+            </article>
+          ))
+        }
+
+      </section>
+      <footer className="px-5 pt-3 pb-15">
         <form onSubmit={onSubmit}>
           <input
             name="message"
@@ -147,33 +218,8 @@ export default function ChatPage() {
             value={prompt}
           />
         </form>
-      </section>
+      </footer>
 
-      <article className="pt-6">
-        {chunk && (
-          <article className="pt-6">
-            {/* <h2 className="h2">Chunk data</h2> */}
-            <div className="prose prose-slate max-w-none">
-              <Markdown remarkPlugins={[remarkGfm]}>{chunk}</Markdown>
-            </div>
-          </article>)}
-      </article>
-      <article className="pt-6">
-        {response && (
-          <article className="pt-6">
-            <h2 className="h2">Response data</h2>
-            <div className="prose prose-slate max-w-none">
-              <Markdown remarkPlugins={[remarkGfm]}>{response}</Markdown>
-            </div>
-          </article>)}
-      </article>
-      {jsonInvoice && (
-        <article className="pt-6">
-          <h2 className="h2">JSON data</h2>
-          <div className="prose prose-slate max-w-none">
-            <Markdown remarkPlugins={[remarkGfm]}>{jsonInvoice}</Markdown>
-          </div>
-        </article>)}
-    </>
+    </section>
   );
 }

@@ -1,0 +1,10 @@
+.chatMessages {
+    /*
+    * Set a flexible height so that the spacer can take the available space
+    * Adjust this value based on header/footer heights
+    */
+    height: calc(100vh - 175px);
+    overflow: auto;
+    display: flex;
+    flex-direction: column-reverse;
+}
