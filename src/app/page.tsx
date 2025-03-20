@@ -15,7 +15,7 @@ export default function Home() {
     router.push(`/chat?ask=${prompt}`);
   }
   return (
-    <>
+    <section className="flex flex-col gap-4 p-5">
       <h1>InvoiceGen AI</h1>
       <h2>Welcome Text</h2>
 
@@ -37,6 +37,6 @@ export default function Home() {
           <button>Send</button>
         </form>
       </section>
-    </>
+    </section>
   );
 }

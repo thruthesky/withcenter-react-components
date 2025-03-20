@@ -1,5 +1,47 @@
 import { Schema } from "firebase/vertexai";
 
+
+export const FEATURE_SCHEMA = Schema.object({
+    properties: {
+        feature: Schema.string({
+            description: "The name of the feature",
+        }),
+        description: Schema.string({
+            description: "The description of the feature",
+        }),
+        amount: Schema.string({
+            description: "The amount of the feature",
+        }),
+        duration: Schema.string({
+            description: "The duration of the feature",
+        }),
+    },
+});
+
+export const GROUP_FEATURE_SCHEMA = Schema.object({
+    properties: {
+        feature: Schema.string({
+            description: "The name of the feature",
+        }),
+        description: Schema.string({
+            description: "The description of the feature",
+        }),
+        amount: Schema.string({
+            description: "The amount of the feature",
+        }),
+        duration: Schema.string({
+            description: "The duration of the feature",
+        }),
+        group: Schema.array({
+            description: "The group of related feature",
+            items: FEATURE_SCHEMA,
+        }),
+
+    },
+    optionalProperties: ['group'],
+});
+
+
 export const INVOICE_SCHEMA = Schema.object({
     properties: {
         project: Schema.string({
@@ -8,22 +50,7 @@ export const INVOICE_SCHEMA = Schema.object({
 
         invoice: Schema.array({
             description: "List of features included in the project",
-            items: Schema.object({
-                properties: {
-                    feature: Schema.string({
-                        description: "The name of the feature",
-                    }),
-                    description: Schema.string({
-                        description: "The description of the feature",
-                    }),
-                    amount: Schema.string({
-                        description: "The amount of the feature",
-                    }),
-                    duration: Schema.string({
-                        description: "The duration of the feature",
-                    }),
-                },
-            }),
+            items: FEATURE_SCHEMA,
         }),
 
         total: Schema.object({

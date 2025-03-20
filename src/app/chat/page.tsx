@@ -14,6 +14,7 @@ import {
 
 import styles from "./page.module.css";
 import { useInvoiceSetData } from "@/components/ContextProvider";
+import Spinner from "@/components/Spinner";
 
 
 interface ChatHistory {
@@ -40,6 +41,8 @@ export default function ChatPage() {
   const initialized = useRef(false);
 
   const [history, setHistory] = useState<ChatHistory[]>([]);
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!initialized.current) {
@@ -136,7 +139,7 @@ export default function ChatPage() {
   }
 
   async function onPublish() {
-
+    setLoading(true);
     const finalizedInvoice = await getFinalizeInvoice();
     console.log("finalized::", finalizedInvoice);
     const publishInvoiceModel = getGenerativeModel(getVertexAI(), {
@@ -151,6 +154,7 @@ export default function ChatPage() {
     const res = result.response.text();
     console.log("res::", res);
     setInvoice(res);
+    setLoading(false);
     router.push('/invoice');
   }
 
@@ -173,7 +177,8 @@ export default function ChatPage() {
 
           <button className="button" onClick={onGenerateJson}>Get JSON</button>
 
-          <button className="button" onClick={onPublish}>Publish</button>
+          <button className="button" onClick={onPublish}>{loading ? <Spinner /> : 'Publish'}</button>
+
         </nav>
       </header>
       <section className={`p-5 ${styles.chatMessages}`}>
@@ -193,16 +198,20 @@ export default function ChatPage() {
           </article>)}
 
         {chunk && (
-          <article className="flex">
-            <data className="bg-green-100 p-4 rounded-md mb-4 w-11/12">
-              <Markdown remarkPlugins={[remarkGfm]}>{chunk}</Markdown>
-            </data>
+          <article className={`flex flex-col`}>
+            <h3 className={`flex text-sm text-gray-500 `}>Ai</h3>
+            <section className="flex" >
+              <data className="bg-green-100 w-11/12 p-4 rounded-md mb-4">
+                <Markdown remarkPlugins={[remarkGfm]}>{chunk}</Markdown>
+                <Spinner />
+              </data>
+            </section>
           </article>)}
         {
           history.length > 0 && history.map((content, index) => (
             <article key={index} className={`flex flex-col`}>
               <h3 className={`flex text-sm text-gray-500 ${content.role === "user" && " justify-end"}`}>{content.role === "user" ? "You" : "Ai"}</h3>
-              <section key={index} className={`flex  ${content.role === "user" && " justify-end"}`} >
+              <section className={`flex  ${content.role === "user" && " justify-end"}`} >
                 <data className={`${content.role === "user" ? "bg-blue-100 max-w-11/12" : "bg-green-100 w-11/12"} p-4 rounded-md mb-4`}>
                   <Markdown remarkPlugins={[remarkGfm]}>{content.text}</Markdown>
                 </data>
