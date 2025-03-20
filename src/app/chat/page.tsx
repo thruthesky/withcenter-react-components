@@ -5,6 +5,7 @@ import { getVertexAI, getGenerativeModel, GenerativeModel, ChatSession } from "f
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useSearchParams } from "next/navigation";
+
 import {
   INVOICE_SCHEMA,
   // INVOICE_SCHEMA, 
@@ -20,6 +21,7 @@ interface ChatHistory {
 }
 
 export default function ChatPage() {
+
   const params = useSearchParams();
   const type = params.get("type");
   const ask = params.get("ask");
@@ -169,6 +171,8 @@ export default function ChatPage() {
           <button className="button" onClick={onPublish}>Publish</button>
 
           <button className="button" onClick={onPublishGenerateJson}>JSON</button>
+
+
         </nav>
       </header>
       <section className={`p-5 ${styles.chatMessages}`}>
