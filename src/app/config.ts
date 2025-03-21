@@ -258,7 +258,7 @@ To complete the task, you need to follow these steps:
         "description": "Allow users to view images",
         "duration": "3 days",
         "category": "media",
-        "pages": 3
+        "pages": 8
     },
     { 
         "feature": "Image editing",
@@ -266,7 +266,7 @@ To complete the task, you need to follow these steps:
         "description": "Allow users to edit images",
         "duration": "5 days",
         "category": "media",
-        "pages": 3
+        "pages": 23
     },
     { 
         "feature": "Video upload",
@@ -274,7 +274,7 @@ To complete the task, you need to follow these steps:
         "description": "Allow users to upload videos",
         "duration": "2 days",
         "category": "media",
-        "pages": 2
+        "pages": 25
     },
     { 
         "feature": "Video gallery",
@@ -282,7 +282,7 @@ To complete the task, you need to follow these steps:
         "description": "Allow users to view videos",
         "duration": "3 days",
         "category": "media",
-        "pages": 3
+        "pages": 34
     },
     { 
         "feature": "Audio upload",
@@ -290,7 +290,7 @@ To complete the task, you need to follow these steps:
         "description": "Allow users to upload audio",
         "duration": "2 days",
         "category": "media",
-        "pages": 2
+        "pages": 22
     },
     { 
         "feature": "Audio gallery",
@@ -298,7 +298,7 @@ To complete the task, you need to follow these steps:
         "description": "Allow users to view audio",
         "duration": "3 days",
         "category": "media",
-        "pages": 3
+        "pages": 13
     },
     { 
         "feature": "File upload",
@@ -306,7 +306,7 @@ To complete the task, you need to follow these steps:
         "description": "Allow users to upload files",
         "duration": "2 days",
         "category": "media",
-        "pages": 2
+        "pages": 12
     },
     { 
         "feature": "File gallery",
@@ -314,7 +314,7 @@ To complete the task, you need to follow these steps:
         "description": "Allow users to view files",
         "duration": "3 days",
         "category": "media",
-        "pages": 3
+        "pages": 14
     },
     { 
         "feature": "Follow system",
@@ -322,7 +322,7 @@ To complete the task, you need to follow these steps:
         "description": "Allow users to follow each other",
         "duration": "2 days",
         "category": "forum",
-        "pages": 2
+        "pages": 20
     },
     { 
         "feature": "Like system",
@@ -330,7 +330,7 @@ To complete the task, you need to follow these steps:
         "description": "Allow users to like each other's posts",
         "duration": "8 days",
         "category": "forum",
-        "pages": 2
+        "pages": 8
     },
     { 
         "feature": "Comment system",
@@ -346,7 +346,7 @@ To complete the task, you need to follow these steps:
         "description": "Allow users to post each other's posts",
         "duration": "6 days",
         "category": "forum",
-        "pages": 2
+        "pages": 20
     },
     { 
         "feature": "User Search",
@@ -354,7 +354,7 @@ To complete the task, you need to follow these steps:
         "description": "Allow users to search each other's posts",
         "duration": "5 days",
         "category": "widget",
-        "pages": 7
+        "pages": 17
     },
     { 
         "feature": "Filter system",
