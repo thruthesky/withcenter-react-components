@@ -318,23 +318,23 @@ To complete the task, you need to follow these steps:
     },
     { 
         "feature": "Follow system",
-        "amount": 250000,
+        "amount": 180000,
         "description": "Allow users to follow each other",
-        "duration": "5 days",
+        "duration": "2 days",
         "category": "forum",
         "pages": 2
     },
     { 
         "feature": "Like system",
-        "amount": 250000,
+        "amount": 280000,
         "description": "Allow users to like each other's posts",
-        "duration": "5 days",
+        "duration": "8 days",
         "category": "forum",
         "pages": 2
     },
     { 
         "feature": "Comment system",
-        "amount": 250000,
+        "amount": 350000,
         "description": "Allow users to comment on each other's posts",
         "duration": "5 days",
         "category": "forum",
@@ -344,7 +344,7 @@ To complete the task, you need to follow these steps:
         "feature": "Post system",
         "amount": 250000,
         "description": "Allow users to post each other's posts",
-        "duration": "5 days",
+        "duration": "6 days",
         "category": "forum",
         "pages": 2
     },
