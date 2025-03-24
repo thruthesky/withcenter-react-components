@@ -1,42 +1,14 @@
 "use client"
-import { useInvoiceData } from "@/components/ContextProvider";
 import Link from "next/link";
 import styles from "./page.module.css";
 import React from "react";
+import { useInvoiceSelector } from "@/store/app.store";
+import { InvoiceSchema } from "@/store/invoice.slice";
 
-interface INVOICE_SCHEMA {
-    project: string;
-    invoice: {
-        feature: string;
-        description: string;
-        amount: string;
-        duration: string;
-    }[];
-
-    invoiceGroup: [
-        {
-            category: string;
-            items: {
-                feature: string;
-                description: string;
-                amount: string;
-                duration: string;
-                pages: number;
-                category: string;
-            }[];
-        }
-    ];
-    total: {
-        amount: number;
-        duration: number;
-        pages: number;
-    };
-}
 
 export default function InvoicePage() {
-    const invoice = useInvoiceData();
-    console.log("invoice::", invoice);
-    const data: INVOICE_SCHEMA = invoice ? JSON.parse(invoice) : null;
+    const invoice = useInvoiceSelector();
+    const data: InvoiceSchema = invoice.json ?? null;
     return (
         <section className="flex flex-col gap-4">
             <header className="flex justify-start gap-5 items-center p-4 bg-gray-800 text-white">
