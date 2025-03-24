@@ -2,6 +2,7 @@
 import { useInvoiceData } from "@/components/ContextProvider";
 import Link from "next/link";
 import styles from "./page.module.css";
+import React from "react";
 
 interface INVOICE_SCHEMA {
     project: string;
@@ -59,7 +60,7 @@ export default function InvoicePage() {
                     </thead>
                     <tbody>
                         {data.invoiceGroup.map((group, i) => (
-                            <>
+                            <React.Fragment key={i}>
                                 {group.items.map((item, index) => (
                                     <tr key={`${group.category}${i}${index}`}>
                                         {index == 0 && <td rowSpan={group.items.length}>{group.category}</td>}
@@ -70,7 +71,7 @@ export default function InvoicePage() {
                                         <td >{item.pages}</td>
                                     </tr>
                                 ))}
-                            </>
+                            </React.Fragment>
                         ))}
                     </tbody>
                     <tfoot>

@@ -221,7 +221,8 @@ export default function ChatPage() {
 
       </section>
       <footer className="px-5 pt-3 pb-15">
-        <form onSubmit={onSubmit}>
+        <form className="flex gap-3" onSubmit={onSubmit}>
+          <button type="button" className="button" onClick={onReset}>Image</button>
           <input
             name="message"
             className="border border-slate-400 p-2 rounded-md w-full"
@@ -230,6 +231,8 @@ export default function ChatPage() {
             onChange={(e) => setPrompt(e.target.value)}
             value={prompt}
           />
+
+          <button type="submit">Send</button>
         </form>
       </footer>
 
