@@ -1,4 +1,4 @@
-import { deleteObject, getDownloadURL, getStorage, ref as storageRef, uploadBytesResumable, UploadTaskSnapshot } from "firebase/storage";
+import { deleteObject, getDownloadURL, getMetadata, getStorage, ref, ref as storageRef, uploadBytesResumable, UploadTaskSnapshot } from "firebase/storage";
 import { ChangeEvent } from "react";
 
 export function uploadImage(event: ChangeEvent<HTMLInputElement>, {
@@ -74,4 +74,22 @@ export function deleteImage(url: string, { onSuccess, onError }: {
             console.log("Uh-oh, an error occurred!", error);
             if (onError) onError(url);
         });
+}
+
+
+
+export async function getMimeType(fileUrl: string): Promise<string | null> {
+    try {
+        // Create a reference to the file
+        const fileRef = ref(getStorage(), fileUrl);
+
+        // Get the metadata of the file
+        const metadata = await getMetadata(fileRef);
+
+        // Return the contentType (MIME type)
+        return metadata.contentType || null;
+    } catch (error) {
+        console.error("Error fetching metadata:", error);
+        return null;
+    }
 }

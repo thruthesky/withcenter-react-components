@@ -1,7 +1,10 @@
+import { Part } from "firebase/vertexai";
+
 export interface ChatHistory {
   role: string;
   text: string;
   imageUrls?: string[];
+  parts?: Array<string | Part>;
 }
 
 export interface State {
@@ -39,8 +42,10 @@ export function chatReducer(
   }
 ) {
   switch (action.type) {
-    case "addChunk":
+    case "addChunk": {
       return { ...state, chunk: state.chunk + action.chunk };
+    }
+
     case "resetChunk":
       return { ...state, chunk: "" };
     case "loadingOn":
@@ -66,8 +71,15 @@ export function chatReducer(
       return { ...state, imageUrls: [] };
     case "setProgress":
       return { ...state, progress: action.progress };
-    case "addChatHistory":
-      return { ...state, history: [action.history, ...state.history] };
+    case "addChatHistory": {
+      const newHistory = {
+        ...state,
+        history: [action.history, ...state.history],
+      };
+      console.log("newHistory", newHistory);
+      return newHistory;
+    }
+
     case "reset":
       return chatInitialState;
     default:

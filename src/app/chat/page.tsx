@@ -38,7 +38,7 @@ import {
 } from "./chat.reducer";
 import UploadImageButton from "@/components/UploadImageButton";
 import Image from "next/image";
-import { getMetadata, getStorage, ref } from "firebase/storage";
+import { getMimeType } from "@/lib/firebase/firebase.functions";
 
 export default function ChatPage() {
   const router = useRouter();
@@ -59,9 +59,6 @@ export default function ChatPage() {
       model.current = getGenerativeModel(getVertexAI(), {
         model: "gemini-2.0-flash",
         systemInstruction: SYSTEM_INSTRUCTION,
-        generationConfig: {
-          temperature: 0.1,
-        },
       });
       chat.current = model.current.startChat();
 
@@ -98,7 +95,7 @@ export default function ChatPage() {
       Please always include the invoice in table format at the end. Also Suggested additional features for the app that are not in the invoice yet. Please use markdown format for the invoice. but dont add code block \'\'\'markdown"
 
 
-      If theres any images/files, please identify what the image is about and look for related features and add them to the invoice.
+      If theres any images please identify what the image is about and look for related features and add them to the invoice.
       If the image is about chat screenshots, please add chat features to the invoice.
       If the image is about a website, please add website features to the invoice.
       If the image is about a mobile app, please add mobile app features to the invoice.
@@ -114,21 +111,35 @@ export default function ChatPage() {
 
     if (state.imageUrls && state.imageUrls.length > 0) {
       userPrompt.imageUrls = state.imageUrls;
-      state.imageUrls.forEach(async (url) => {
-        const storageRef = ref(getStorage(), url);
-        const meta = await getMetadata(storageRef);
+      console.log("state.imageUrls.forEach1", parts);
+      // state.imageUrls.forEach(async (url) => {
+      //   const storageRef = ref(getStorage(), url);
+      //   const meta = await getMetadata(storageRef);
+      //   parts.push({
+      //     fileData: {
+      //       mimeType: meta.contentType,
+      //       fileUri: url,
+      //     },
+      //   } as FileDataPart);
+      // });
+
+      for (const url of state.imageUrls) {
         parts.push({
           fileData: {
-            mimeType: meta.contentType,
+            mimeType: await getMimeType(url),
             fileUri: url,
           },
         } as FileDataPart);
-      });
+        // console.log("state.imageUrls.forEach", url);
+        console.log("state.imageUrls.forEach", parts);
+      }
+
+      console.log("state.imageUrls.forEach2", parts);
       dispatch(resetImageUrls());
     }
-
+    userPrompt.parts = parts;
     dispatch(addChatHistory(userPrompt));
-
+    console.log("parts3::", parts);
     const result = await chat.current.sendMessageStream(parts);
     let modelRes = "";
     for await (const chunk of result.stream) {
@@ -138,6 +149,10 @@ export default function ChatPage() {
 
       dispatch(addChunk(chunkText));
     }
+    console.log(
+      "sendMessageStream::gethistory",
+      await chat.current.getHistory()
+    );
 
     dispatch(resetChunk());
     dispatch(addChatHistory({ role: "model", text: modelRes }));
