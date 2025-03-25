@@ -38,6 +38,7 @@ import {
 } from "./chat.reducer";
 import UploadImageButton from "@/components/UploadImageButton";
 import Image from "next/image";
+import { getMetadata, getStorage, ref } from "firebase/storage";
 
 export default function ChatPage() {
   const router = useRouter();
@@ -58,15 +59,16 @@ export default function ChatPage() {
       model.current = getGenerativeModel(getVertexAI(), {
         model: "gemini-2.0-flash",
         systemInstruction: SYSTEM_INSTRUCTION,
+        generationConfig: {
+          temperature: 0.1,
+        },
       });
       chat.current = model.current.startChat();
 
       if (ask) {
-        console.log("ask::", ask);
         submitPrompt(ask);
       } else if (type) {
         const p = "I want to build a " + type;
-        console.log("type::", p);
         submitPrompt(p);
       }
       initialized.current = true;
@@ -78,7 +80,7 @@ export default function ChatPage() {
     const formData = new FormData(e.currentTarget);
     const message = formData.get("message") as string;
 
-    console.log("Message sent:", message);
+    // console.log("Message sent:", message);
 
     dispatch(resetPrompt());
     await submitPrompt(message);
@@ -96,7 +98,7 @@ export default function ChatPage() {
       Please always include the invoice in table format at the end. Also Suggested additional features for the app that are not in the invoice yet. Please use markdown format for the invoice. but dont add code block \'\'\'markdown"
 
 
-      If theres any images, please identify what the image is about and look for related features and add them to the invoice.
+      If theres any images/files, please identify what the image is about and look for related features and add them to the invoice.
       If the image is about chat screenshots, please add chat features to the invoice.
       If the image is about a website, please add website features to the invoice.
       If the image is about a mobile app, please add mobile app features to the invoice.
@@ -109,21 +111,19 @@ export default function ChatPage() {
       </RECAP>
       `,
     ];
+
     if (state.imageUrls && state.imageUrls.length > 0) {
       userPrompt.imageUrls = state.imageUrls;
-      state.imageUrls.forEach((url) => {
+      state.imageUrls.forEach(async (url) => {
+        const storageRef = ref(getStorage(), url);
+        const meta = await getMetadata(storageRef);
         parts.push({
           fileData: {
-            mimeType: "image/png",
+            mimeType: meta.contentType,
             fileUri: url,
           },
         } as FileDataPart);
       });
-
-      //       FileData {
-      //     mimeType: string;
-      //     fileUri: string;
-      // }
       dispatch(resetImageUrls());
     }
 
@@ -134,7 +134,7 @@ export default function ChatPage() {
     for await (const chunk of result.stream) {
       const chunkText = chunk.text();
       modelRes += chunkText;
-      console.log(chunkText);
+      // console.log(chunkText);
 
       dispatch(addChunk(chunkText));
     }
@@ -159,7 +159,7 @@ export default function ChatPage() {
   async function onPublish() {
     dispatch(loadingOn());
     const finalizedInvoice = await getFinalizeInvoice();
-    console.log("finalized::", finalizedInvoice);
+    // console.log("finalized::", finalizedInvoice);
     const publishInvoiceModel = getGenerativeModel(getVertexAI(), {
       model: "gemini-2.0-flash",
       systemInstruction: SYSTEM_INSTRUCTION,
@@ -170,7 +170,7 @@ export default function ChatPage() {
     });
     const result = await publishInvoiceModel.generateContent(finalizedInvoice);
     const res = result.response.text();
-    console.log("res::", res);
+    // console.log("res::", res);
     storeDispatch(setInvoice(JSON.parse(res)));
     /// set history for edit
 
@@ -181,11 +181,11 @@ export default function ChatPage() {
   async function onReset(): Promise<void> {
     dispatch(reset());
     chat.current = model.current.startChat();
-    console.log("chat::", await chat.current.getHistory());
+    // console.log("chat::", await chat.current.getHistory());
   }
 
   async function handleDeleteImage(image: string) {
-    console.log("handleDeleteImage", image);
+    // console.log("handleDeleteImage", image);
     const res = confirm(`Delete uploaded image?`);
     if (!res) return;
     dispatch(removeImageUrl(image));
@@ -295,9 +295,11 @@ export default function ChatPage() {
               console.log("onUpload", url), dispatch(addImageUrl(url))
             )}
             progress={(percent) => {
-              console.log("progress", percent);
+              // console.log("progress", percent);
               dispatch(setProgress(percent));
             }}
+            // accept="image/png, image/jpeg, image/jpg, application/pdf"
+            accept=""
           />
           <input
             name="message"

@@ -4,13 +4,14 @@ export default function UploadImageButton(options: {
   onUpload: (url: string) => void;
   progress?: (progress: number) => void;
   deleteUrl?: string;
+  accept?: string;
 }) {
   return (
     <div className="relative flex items-center">
       <input
         className="absolute bottom-0 left-0 right-0 top-0 text-8xl opacity-0 cursor-pointer"
         type="file"
-        accept="image/png, image/jpeg, image/jpg"
+        accept={options.accept ?? "image/png, image/jpeg, image/jpg"}
         onChange={(e) => uploadImage(e, options)}
       />
       <svg

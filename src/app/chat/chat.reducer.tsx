@@ -38,7 +38,6 @@ export function chatReducer(
     [key: string]: any;
   }
 ) {
-  console.log("chatReducer", action.type, action);
   switch (action.type) {
     case "addChunk":
       return { ...state, chunk: state.chunk + action.chunk };
@@ -53,7 +52,6 @@ export function chatReducer(
     case "resetPrompt":
       return { ...state, prompt: "" };
     case "addImageUrl":
-      console.log("addImageUrl", action, action.imageUrl);
       return {
         ...state,
         imageUrls: [...state.imageUrls, action.imageUrl],
