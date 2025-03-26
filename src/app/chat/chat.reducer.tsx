@@ -10,24 +10,18 @@ export interface ChatHistory {
 export interface State {
   history: ChatHistory[];
   loading: boolean;
-  chunk: string;
+  invoiceChunck: string;
+  analyzeChunck: string;
   prompt: string;
   files: FileData[];
   progress: number;
   analysisLoading: boolean;
 }
 
-// interface ChatAction {
-//   type: | "addChunk" | "setLoading" | "setPrompt" | "addChatHistory" | "reset";
-//   chunk?: string;
-//   loading?: boolean;
-//   prompt?: string;
-//   history?: ChatHistory[];
-// }
-
 export const chatInitialState: State = {
   history: [],
-  chunk: "",
+  invoiceChunck: "",
+  analyzeChunck: "",
   prompt: "",
   files: [],
   progress: 0,
@@ -44,12 +38,16 @@ export function chatReducer(
   }
 ) {
   switch (action.type) {
-    case "addChunk": {
-      return { ...state, chunk: state.chunk + action.chunk };
+    case "addInvoiceChunk": {
+      return { ...state, invoiceChunck: state.invoiceChunck + action.chunk };
     }
-
-    case "resetChunk":
-      return { ...state, chunk: "" };
+    case "resetInvoiceChunk":
+      return { ...state, invoiceChunck: "" };
+    case "addAnalyzeChunk": {
+      return { ...state, analyzeChunck: state.analyzeChunck + action.chunk };
+    }
+    case "resetAnalyzeChunk":
+      return { ...state, analyzeChunck: "" };
     case "loadingOn":
       return { ...state, loading: true };
     case "loadingOff":
@@ -95,11 +93,17 @@ export function chatReducer(
   }
 }
 
-export function addChunk(chunk: string) {
-  return { type: "addChunk", chunk };
+export function addInvoiceChunk(chunk: string) {
+  return { type: "addInvoiceChunk", chunk };
 }
-export function resetChunk() {
-  return { type: "resetChunk" };
+export function resetInvoiceChunk() {
+  return { type: "resetInvoiceChunk" };
+}
+export function addAnalyzeChunk(chunk: string) {
+  return { type: "addAnalyzeChunk", chunk };
+}
+export function resetAnalyzeChunk() {
+  return { type: "resetAnalyzeChunk" };
 }
 export function loadingOn() {
   return { type: "loadingOn" };

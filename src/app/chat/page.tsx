@@ -20,9 +20,8 @@ import { useDispatch } from "react-redux";
 import { setInvoice } from "@/store/invoice.slice";
 import {
   addChatHistory,
-  addChunk,
+  addInvoiceChunk,
   addFile,
-  analysisLoadingOff,
   analysisLoadingOn,
   ChatHistory,
   chatInitialState,
@@ -31,11 +30,13 @@ import {
   loadingOn,
   removeFile,
   reset,
-  resetChunk,
+  resetInvoiceChunk,
   resetFiles,
   resetPrompt,
   setProgress,
   setPrompt,
+  addAnalyzeChunk,
+  resetAnalyzeChunk,
 } from "./chat.reducer";
 import UploadImageButton from "@/components/UploadImageButton";
 import Image from "next/image";
@@ -140,14 +141,28 @@ export default function ChatPage() {
       //   responseSchema: FILE_EXTRACTION_SCHEMA,
       // },
     });
-    const result = await fileModel.generateContent(parts);
-    const resultText = result.response.text();
-    console.log("res::", resultText);
-    dispatch(analysisLoadingOff());
-    const filePrompt: ChatHistory = { role: "file", text: resultText };
+    // const result = await fileModel.generateContent(parts);
+    // const resultText = result.response.text();
+    // console.log("res::", resultText);
+    // dispatch(analysisLoadingOff());
+    // const filePrompt: ChatHistory = { role: "file", text: resultText };
+    // dispatch(addChatHistory(filePrompt));
+
+    const result = await fileModel.generateContentStream(parts);
+    let fileModelRes = "";
+    for await (const chunk of result.stream) {
+      const chunkText = chunk.text();
+      fileModelRes += chunkText;
+      // console.log(chunkText);
+
+      dispatch(addAnalyzeChunk(chunkText));
+    }
+    const filePrompt: ChatHistory = { role: "file", text: fileModelRes };
     dispatch(addChatHistory(filePrompt));
+    dispatch(resetAnalyzeChunk());
+
     await send(`
-      ${resultText}
+      ${fileModelRes}
 
       <RECAP>
       Base from the json data, add related features to the invoice.
@@ -183,14 +198,10 @@ export default function ChatPage() {
       modelRes += chunkText;
       // console.log(chunkText);
 
-      dispatch(addChunk(chunkText));
+      dispatch(addInvoiceChunk(chunkText));
     }
-    console.log(
-      "sendMessageStream::gethistory",
-      await chat.current.getHistory()
-    );
 
-    dispatch(resetChunk());
+    dispatch(resetInvoiceChunk());
     dispatch(addChatHistory({ role: "model", text: modelRes }));
   }
 
@@ -232,7 +243,6 @@ export default function ChatPage() {
   async function onReset(): Promise<void> {
     dispatch(reset());
     chat.current = model.current.startChat();
-    // console.log("chat::", await chat.current.getHistory());
   }
 
   async function handleDeleteImage(file: FileData) {
@@ -255,22 +265,27 @@ export default function ChatPage() {
         </nav>
       </header>
       <section className={`p-5 ${styles.chatMessages}`}>
-        {state.analysisLoading && (
+        {state.analyzeChunck && (
           <article className={`flex flex-col`}>
             <h3 className={`flex text-sm text-gray-500 `}>Analyzing...</h3>
             <section className="flex">
-              <data className="bg-green-100 w-11/12 p-4 rounded-md mb-4">
+              <data className="bg-yellow-100 w-11/12 p-4 rounded-md mb-4">
+                <Markdown remarkPlugins={[remarkGfm]}>
+                  {state.analyzeChunck}
+                </Markdown>
                 <Spinner />
               </data>
             </section>
           </article>
         )}
-        {state.chunk && (
+        {state.invoiceChunck && (
           <article className={`flex flex-col`}>
-            <h3 className={`flex text-sm text-gray-500 `}>Ai</h3>
+            <h3 className={`flex text-sm text-gray-500 `}>Invoice AI</h3>
             <section className="flex">
               <data className="bg-green-100 w-11/12 p-4 rounded-md mb-4">
-                <Markdown remarkPlugins={[remarkGfm]}>{state.chunk}</Markdown>
+                <Markdown remarkPlugins={[remarkGfm]}>
+                  {state.invoiceChunck}
+                </Markdown>
                 <Spinner />
               </data>
             </section>
@@ -297,6 +312,8 @@ export default function ChatPage() {
                   className={`${
                     content.role === "user"
                       ? "bg-blue-100 max-w-11/12"
+                      : content.role === "file"
+                      ? "bg-yellow-100 w-11/12"
                       : "bg-green-100 w-11/12"
                   } p-4 rounded-md mb-4`}
                 >
