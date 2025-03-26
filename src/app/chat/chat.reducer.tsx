@@ -1,9 +1,9 @@
-import { Part } from "firebase/vertexai";
+import { Part, FileData } from "firebase/vertexai";
 
 export interface ChatHistory {
   role: string;
   text: string;
-  imageUrls?: string[];
+  files?: FileData[];
   parts?: Array<string | Part>;
 }
 
@@ -12,8 +12,9 @@ export interface State {
   loading: boolean;
   chunk: string;
   prompt: string;
-  imageUrls: string[];
+  files: FileData[];
   progress: number;
+  analysisLoading: boolean;
 }
 
 // interface ChatAction {
@@ -26,11 +27,12 @@ export interface State {
 
 export const chatInitialState: State = {
   history: [],
-  loading: false,
   chunk: "",
   prompt: "",
-  imageUrls: [],
+  files: [],
   progress: 0,
+  loading: false,
+  analysisLoading: false,
 };
 
 export function chatReducer(
@@ -52,23 +54,29 @@ export function chatReducer(
       return { ...state, loading: true };
     case "loadingOff":
       return { ...state, loading: false };
+    case "analysisLoadingOn":
+      return { ...state, analysisLoading: true };
+    case "analysisLoadingOff":
+      return { ...state, analysisLoading: false };
     case "setPrompt":
       return { ...state, prompt: action.prompt };
     case "resetPrompt":
       return { ...state, prompt: "" };
-    case "addImageUrl":
+    case "addFile":
       return {
         ...state,
-        imageUrls: [...state.imageUrls, action.imageUrl],
+        files: [...state.files, action.file],
         progress: 0,
       };
-    case "removeImageUrl":
+    case "removeFile":
       return {
         ...state,
-        imageUrls: state.imageUrls.filter((url) => url !== action.imageUrl),
+        files: state.files.filter(
+          (file) => file.fileUri !== action.file.fileUri
+        ),
       };
-    case "resetImageUrls":
-      return { ...state, imageUrls: [] };
+    case "resetFiles":
+      return { ...state, files: [] };
     case "setProgress":
       return { ...state, progress: action.progress };
     case "addChatHistory": {
@@ -99,21 +107,28 @@ export function loadingOn() {
 export function loadingOff() {
   return { type: "loadingOff" };
 }
+export function analysisLoadingOn() {
+  return { type: "analysisLoadingOn" };
+}
+export function analysisLoadingOff() {
+  return { type: "analysisLoadingOff" };
+}
 export function setPrompt(prompt: string) {
   return { type: "setPrompt", prompt };
 }
 export function resetPrompt() {
   return { type: "resetPrompt" };
 }
-export function addImageUrl(imageUrl: string) {
-  return { type: "addImageUrl", imageUrl };
+export function addFile(file: FileData) {
+  return { type: "addFile", file };
 }
-export function removeImageUrl(imageUrl: string) {
-  return { type: "removeImageUrl", imageUrl };
+export function removeFile(file: FileData) {
+  return { type: "removeFile", file };
 }
-export function resetImageUrls() {
-  return { type: "resetImageUrls" };
+export function resetFiles() {
+  return { type: "resetFiles" };
 }
+
 export function setProgress(progress: number) {
   return { type: "setProgress", progress };
 }

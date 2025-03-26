@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useReducer, useRef } from "react";
+import React, { useEffect, useReducer, useRef } from "react";
 import {
   getVertexAI,
   getGenerativeModel,
@@ -8,12 +8,11 @@ import {
   ChatSession,
   Part,
   FileDataPart,
+  FileData,
 } from "firebase/vertexai";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRouter, useSearchParams } from "next/navigation";
-
-import { INVOICE_SCHEMA, SYSTEM_INSTRUCTION } from "../config";
 
 import styles from "./page.module.css";
 import Spinner from "@/components/Spinner";
@@ -22,16 +21,18 @@ import { setInvoice } from "@/store/invoice.slice";
 import {
   addChatHistory,
   addChunk,
-  addImageUrl,
+  addFile,
+  analysisLoadingOff,
+  analysisLoadingOn,
   ChatHistory,
   chatInitialState,
   chatReducer,
   loadingOff,
   loadingOn,
-  removeImageUrl,
+  removeFile,
   reset,
   resetChunk,
-  resetImageUrls,
+  resetFiles,
   resetPrompt,
   setProgress,
   setPrompt,
@@ -39,6 +40,11 @@ import {
 import UploadImageButton from "@/components/UploadImageButton";
 import Image from "next/image";
 import { getMimeType } from "@/lib/firebase/firebase.functions";
+import { INVOICE_SCHEMA } from "@/config/schema";
+import {
+  IMAGE_AND_PDF_EXTRACTION_INSTRUCTION,
+  SYSTEM_INSTRUCTION,
+} from "@/config/instruction";
 
 export default function ChatPage() {
   const router = useRouter();
@@ -77,70 +83,99 @@ export default function ChatPage() {
     const formData = new FormData(e.currentTarget);
     const message = formData.get("message") as string;
 
+    if (!message && state.files.length == 0) return;
     // console.log("Message sent:", message);
 
     dispatch(resetPrompt());
-    await submitPrompt(message);
+    if (state.files.length > 0) {
+      console.log("submitFilePrompt", message);
+      await submitFilePrompt(message);
+    } else {
+      console.log("submitFilePrompt", message);
+      await submitPrompt(message);
+    }
   }
 
-  async function submitPrompt(message: string): Promise<void> {
-    dispatch(resetChunk());
-    // To generate text output, call generateContent with the text input
+  async function submitFilePrompt(message: string): Promise<void> {
+    dispatch(analysisLoadingOn());
     const userPrompt: ChatHistory = { role: "user", text: message };
+
+    console.log("submitFilePrompt", userPrompt);
 
     const parts: Array<string | Part> = [
       `
       ${message}
+
       <RECAP>
-      Please always include the invoice in table format at the end. Also Suggested additional features for the app that are not in the invoice yet. Please use markdown format for the invoice. but dont add code block \'\'\'markdown"
-
-
-      If theres any images please identify what the image is about and look for related features and add them to the invoice.
-      If the image is about chat screenshots, please add chat features to the invoice.
-      If the image is about a website, please add website features to the invoice.
-      If the image is about a mobile app, please add mobile app features to the invoice.
-      If the image is about a game, please add game features to the invoice.
-      If the image is about a fitness app, please add fitness app features to the invoice.
-      If the image is about a shopping mall, please add shopping mall features to the invoice.
-      If the image is about a forum, please add forum features to the invoice.
-      If the image is about a social media, please add social media features to the invoice.
-      If the image is about a blog, please add blog features to the invoice. 
-      </RECAP>
+      Extract the features from the image and pdf files.
+      Analyze the image and pdf files section by section.
+      Identify the purpose of each section and summarize its content.
+      Look for any technical requirements, user needs, or design specifications mentioned in the document.
+      If the image is like widget or UI, categorize the image and pdf files to what kind of widget or UI it is.
+      If the image is a screenshot, identify the purpose of each section and summarize its content.
+      If the image is a screenshot of another website, identify what are the features of the website.
+      If the image is a screenshot of a UI, identify the purpose of each section and summarize its content.
+      Provide a meaningful feature name and description for each feature.
+      <RECAP/>
       `,
     ];
 
-    if (state.imageUrls && state.imageUrls.length > 0) {
-      userPrompt.imageUrls = state.imageUrls;
-      console.log("state.imageUrls.forEach1", parts);
-      // state.imageUrls.forEach(async (url) => {
-      //   const storageRef = ref(getStorage(), url);
-      //   const meta = await getMetadata(storageRef);
-      //   parts.push({
-      //     fileData: {
-      //       mimeType: meta.contentType,
-      //       fileUri: url,
-      //     },
-      //   } as FileDataPart);
-      // });
-
-      for (const url of state.imageUrls) {
-        parts.push({
-          fileData: {
-            mimeType: await getMimeType(url),
-            fileUri: url,
-          },
-        } as FileDataPart);
-        // console.log("state.imageUrls.forEach", url);
-        console.log("state.imageUrls.forEach", parts);
-      }
-
-      console.log("state.imageUrls.forEach2", parts);
-      dispatch(resetImageUrls());
+    for (const file of state.files) {
+      parts.push({
+        fileData: file,
+      } as FileDataPart);
     }
+
+    userPrompt.files = state.files;
     userPrompt.parts = parts;
     dispatch(addChatHistory(userPrompt));
-    console.log("parts3::", parts);
-    const result = await chat.current.sendMessageStream(parts);
+    dispatch(resetFiles());
+
+    const fileModel = getGenerativeModel(getVertexAI(), {
+      model: "gemini-2.0-flash",
+      systemInstruction: IMAGE_AND_PDF_EXTRACTION_INSTRUCTION,
+      // generationConfig: {
+      //   responseMimeType: "application/json",
+      //   responseSchema: FILE_EXTRACTION_SCHEMA,
+      // },
+    });
+    const result = await fileModel.generateContent(parts);
+    const resultText = result.response.text();
+    console.log("res::", resultText);
+    dispatch(analysisLoadingOff());
+    const filePrompt: ChatHistory = { role: "file", text: resultText };
+    dispatch(addChatHistory(filePrompt));
+    await send(`
+      ${resultText}
+
+      <RECAP>
+      Base from the json data, add related features to the invoice.
+      If the features are already in the invoice, please ignore them.
+      If the features are not in the invoice, please add them to the invoice.
+      If the features has no related features, please add them to the invoice, but put (see admin) in the price and duration.
+
+      Base from the missing features look for the features that are not in the invoice and add them to the invoice.
+
+
+      Please always include the invoice in table format at the end. Also Suggested additional features for the app that are not in the invoice yet. Please use markdown format for the invoice. but dont add code block \'\'\'markdown"
+      </RECAP>
+      `);
+  }
+
+  async function submitPrompt(message: string): Promise<void> {
+    const userPrompt: ChatHistory = { role: "user", text: message };
+    dispatch(addChatHistory(userPrompt));
+    const request: string = `
+      ${message}
+      <RECAP>
+      Please always include the invoice in table format at the end. Also Suggested additional features for the app that are not in the invoice yet. Please use markdown format for the invoice. but dont add code block \'\'\'markdown"
+      </RECAP>
+      `;
+    await send(request);
+  }
+
+  async function send(request: string): Promise<void> {
+    const result = await chat.current.sendMessageStream(request);
     let modelRes = "";
     for await (const chunk of result.stream) {
       const chunkText = chunk.text();
@@ -199,11 +234,11 @@ export default function ChatPage() {
     // console.log("chat::", await chat.current.getHistory());
   }
 
-  async function handleDeleteImage(image: string) {
+  async function handleDeleteImage(file: FileData) {
     // console.log("handleDeleteImage", image);
     const res = confirm(`Delete uploaded image?`);
     if (!res) return;
-    dispatch(removeImageUrl(image));
+    dispatch(removeFile(file));
   }
   return (
     <section className="h-screen flex flex-col gap-4">
@@ -219,6 +254,16 @@ export default function ChatPage() {
         </nav>
       </header>
       <section className={`p-5 ${styles.chatMessages}`}>
+        {state.analysisLoading && (
+          <article className={`flex flex-col`}>
+            <h3 className={`flex text-sm text-gray-500 `}>Analyzing...</h3>
+            <section className="flex">
+              <data className="bg-green-100 w-11/12 p-4 rounded-md mb-4">
+                <Spinner />
+              </data>
+            </section>
+          </article>
+        )}
         {state.chunk && (
           <article className={`flex flex-col`}>
             <h3 className={`flex text-sm text-gray-500 `}>Ai</h3>
@@ -238,7 +283,11 @@ export default function ChatPage() {
                   content.role === "user" && " justify-end"
                 }`}
               >
-                {content.role === "user" ? "You" : "Ai"}
+                {content.role === "user"
+                  ? "You"
+                  : content.role === "file"
+                  ? "Extract AI"
+                  : "Invoice AI"}
               </h3>
               <section
                 className={`flex  ${content.role === "user" && " justify-end"}`}
@@ -253,17 +302,40 @@ export default function ChatPage() {
                   <Markdown remarkPlugins={[remarkGfm]}>
                     {content.text}
                   </Markdown>
+                  {/* {content.parts && <>{JSON.stringify(content.parts)}</>} */}
+
+                  {content.parts &&
+                    content.parts.map(
+                      (part: string | FileDataPart, i: number) => (
+                        <React.Fragment key={i}>
+                          {typeof part === "string" ? null : (
+                            <Image
+                              key={index}
+                              src={part.fileData.fileUri}
+                              width={512}
+                              height={512}
+                              alt="Upload"
+                              className="w-auto h-full"
+                              style={{ width: "auto", height: "auto" }}
+                            />
+                          )}
+                        </React.Fragment>
+                      )
+                    )}
                 </data>
               </section>
             </article>
           ))}
       </section>
-      {state.imageUrls && state.imageUrls.length > 0 && (
-        <section className="flex flex-wrap justify-end gap-3">
-          {state.imageUrls.map((image, index) => (
-            <data key={"imageUrls" + index} className="relative flex">
+      {state.files && state.files.length > 0 && (
+        <section className="flex flex-wrap justify-end gap-3 px-5">
+          {state.files.map((file, index) => (
+            <data
+              key={"imageUrls" + index}
+              className="relative flex min-w-24 min-h-24"
+            >
               <button
-                onClick={() => handleDeleteImage(image)}
+                onClick={() => handleDeleteImage(file)}
                 className="absolute top-0 right-0 p-2 cursor-pointer "
               >
                 <svg
@@ -281,14 +353,36 @@ export default function ChatPage() {
                   />
                 </svg>
               </button>
-              <Image
-                src={image}
-                width={154}
-                height={154}
-                alt="Upload"
-                className="w-auto h-full"
-                style={{ width: "auto", height: "auto" }}
-              />
+              {}
+
+              {file.mimeType.startsWith("image/") && (
+                <Image
+                  src={file.fileUri}
+                  width={154}
+                  height={154}
+                  alt="Upload"
+                  className="w-auto h-full"
+                  style={{ width: "auto", height: "auto" }}
+                />
+              )}
+              {file.mimeType.endsWith("/pdf") && (
+                <section className="flex items-center justify-center w-24 h-24 bg-gray-200 rounded-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-8"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"
+                    />
+                  </svg>
+                </section>
+              )}
             </data>
           ))}
         </section>
@@ -306,8 +400,14 @@ export default function ChatPage() {
         )}
         <form className="flex gap-3" onSubmit={onSubmit}>
           <UploadImageButton
-            onUpload={(url) => (
-              console.log("onUpload", url), dispatch(addImageUrl(url))
+            onUpload={async (url) => (
+              console.log("onUpload", url),
+              dispatch(
+                addFile({
+                  fileUri: url,
+                  mimeType: (await getMimeType(url)) ?? "",
+                })
+              )
             )}
             progress={(percent) => {
               // console.log("progress", percent);

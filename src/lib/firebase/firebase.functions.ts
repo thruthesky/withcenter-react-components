@@ -55,6 +55,8 @@ export function uploadImage(event: ChangeEvent<HTMLInputElement>, {
                         });
                 }
                 onUpload(downloadURL);
+
+                event.target.value = "" // Clear the input value to allow re-uploading the same file;
             });
         }
     );
