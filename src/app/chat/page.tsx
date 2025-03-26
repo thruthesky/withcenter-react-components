@@ -45,6 +45,7 @@ import {
   IMAGE_AND_PDF_EXTRACTION_INSTRUCTION,
   SYSTEM_INSTRUCTION,
 } from "@/config/instruction";
+import Link from "next/link";
 
 export default function ChatPage() {
   const router = useRouter();
@@ -276,7 +277,7 @@ export default function ChatPage() {
           </article>
         )}
         {state.history.length > 0 &&
-          state.history.map((content, index) => (
+          state.history.map((content: ChatHistory, index) => (
             <article key={index} className={`flex flex-col`}>
               <h3
                 className={`flex text-sm text-gray-500 ${
@@ -304,24 +305,42 @@ export default function ChatPage() {
                   </Markdown>
                   {/* {content.parts && <>{JSON.stringify(content.parts)}</>} */}
 
-                  {content.parts &&
-                    content.parts.map(
-                      (part: string | FileDataPart, i: number) => (
-                        <React.Fragment key={i}>
-                          {typeof part === "string" ? null : (
-                            <Image
-                              key={index}
-                              src={part.fileData.fileUri}
-                              width={512}
-                              height={512}
-                              alt="Upload"
-                              className="w-auto h-full"
-                              style={{ width: "auto", height: "auto" }}
-                            />
-                          )}
-                        </React.Fragment>
-                      )
-                    )}
+                  {content.files &&
+                    content.files.map((file, i) => (
+                      <React.Fragment key={i}>
+                        {file.mimeType.startsWith("image/") && (
+                          <Image
+                            src={file.fileUri}
+                            width={154}
+                            height={154}
+                            alt="Upload"
+                            className="w-auto h-full"
+                            style={{ width: "auto", height: "auto" }}
+                          />
+                        )}
+                        {file.mimeType.endsWith("/pdf") && (
+                          <section className="flex flex-col items-center justify-center w-24 h-24 border rounded-md">
+                            <Link href={file.fileUri} target="_blank">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                                stroke="currentColor"
+                                className="size-8"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"
+                                />
+                              </svg>{" "}
+                              PDF File
+                            </Link>
+                          </section>
+                        )}
+                      </React.Fragment>
+                    ))}
                 </data>
               </section>
             </article>
@@ -353,8 +372,6 @@ export default function ChatPage() {
                   />
                 </svg>
               </button>
-              {}
-
               {file.mimeType.startsWith("image/") && (
                 <Image
                   src={file.fileUri}
