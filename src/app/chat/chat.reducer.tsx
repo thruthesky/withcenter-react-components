@@ -5,6 +5,7 @@ export interface ChatHistory {
   text: string;
   files?: FileData[];
   parts?: Array<string | Part>;
+  hide?: boolean;
 }
 
 export interface State {
@@ -48,6 +49,16 @@ export function chatReducer(
     }
     case "resetAnalyzeChunk":
       return { ...state, analyzeChunck: "" };
+    case "showAnalysis": {
+      const newHistory = [...state.history];
+      newHistory[action.index].hide = true;
+      return { ...state, history: newHistory };
+    }
+    case "hideAnalysis": {
+      const newHistory = [...state.history];
+      newHistory[action.index].hide = false;
+      return { ...state, history: newHistory };
+    }
     case "loadingOn":
       return { ...state, loading: true };
     case "loadingOff":
@@ -101,6 +112,12 @@ export function resetInvoiceChunk() {
 }
 export function addAnalyzeChunk(chunk: string) {
   return { type: "addAnalyzeChunk", chunk };
+}
+export function showAnalysis(index: number) {
+  return { type: "showAnalysis", index };
+}
+export function hideAnalysis(index: number) {
+  return { type: "hideAnalysis", index };
 }
 export function resetAnalyzeChunk() {
   return { type: "resetAnalyzeChunk" };

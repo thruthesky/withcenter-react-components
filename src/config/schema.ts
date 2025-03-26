@@ -5,22 +5,22 @@ import { Schema } from "firebase/vertexai";
 export const FEATURE_SCHEMA = Schema.object({
     properties: {
         feature: Schema.string({
-            description: "The name of the feature must be identical to the one in the DATA",
+            description: "The name of the feature must be identical to the one in the <DATA>",
         }),
         description: Schema.string({
             description: "The description of the feature",
         }),
         amount: Schema.string({
-            description: "The amount of the feature",
+            description: "The amount of the feature. if not set put (see admin)",
         }),
         duration: Schema.string({
-            description: "The duration of the feature",
+            description: "The duration of the feature. if not set put (see admin)",
         }),
         category: Schema.string({
             description: "The category of the feature",
         }),
         pages: Schema.number({
-            description: "The number of pages for the feature",
+            description: "The number of pages for the feature. if not set put (see admin)",
         }),
     },
 });

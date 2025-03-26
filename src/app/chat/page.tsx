@@ -35,8 +35,9 @@ import {
   resetPrompt,
   setProgress,
   setPrompt,
-  addAnalyzeChunk,
-  resetAnalyzeChunk,
+  showAnalysis,
+  hideAnalysis,
+  analysisLoadingOff,
 } from "./chat.reducer";
 import UploadImageButton from "@/components/UploadImageButton";
 import Image from "next/image";
@@ -141,31 +142,40 @@ export default function ChatPage() {
       //   responseSchema: FILE_EXTRACTION_SCHEMA,
       // },
     });
-    // const result = await fileModel.generateContent(parts);
-    // const resultText = result.response.text();
-    // console.log("res::", resultText);
-    // dispatch(analysisLoadingOff());
-    // const filePrompt: ChatHistory = { role: "file", text: resultText };
-    // dispatch(addChatHistory(filePrompt));
-
-    const result = await fileModel.generateContentStream(parts);
-    let fileModelRes = "";
-    for await (const chunk of result.stream) {
-      const chunkText = chunk.text();
-      fileModelRes += chunkText;
-      // console.log(chunkText);
-
-      dispatch(addAnalyzeChunk(chunkText));
-    }
-    const filePrompt: ChatHistory = { role: "file", text: fileModelRes };
+    const result = await fileModel.generateContent(parts);
+    const resultText = result.response.text();
+    console.log("res::", resultText);
+    const filePrompt: ChatHistory = {
+      role: "file",
+      text: resultText,
+      hide: true,
+    };
     dispatch(addChatHistory(filePrompt));
-    dispatch(resetAnalyzeChunk());
+    dispatch(analysisLoadingOff());
+
+    // const result = await fileModel.generateContentStream(parts);
+    // let fileModelRes = "";
+    // for await (const chunk of result.stream) {
+    //   const chunkText = chunk.text();
+    //   fileModelRes += chunkText;
+    //   // console.log(chunkText);
+
+    //   dispatch(addAnalyzeChunk(chunkText));
+    // }
+    // const filePrompt: ChatHistory = {
+    //   role: "file",
+    //   text: fileModelRes,
+    //   hide: true,
+    // };
+    // dispatch(addChatHistory(filePrompt));
+    // dispatch(resetAnalyzeChunk());
+    // dispatch(analysisLoadingOff());
 
     await send(`
-      ${fileModelRes}
+      ${resultText}
 
       <RECAP>
-      Base from the json data, add related features to the invoice.
+      Base from the information above, add related features to the invoice.
       If the features are already in the invoice, please ignore them.
       If the features are not in the invoice, please add them to the invoice.
       If the features has no related features, please add them to the invoice, but put (see admin) in the price and duration.
@@ -184,6 +194,7 @@ export default function ChatPage() {
     const request: string = `
       ${message}
       <RECAP>
+      You should base your answer from the given <DATA>. If <DATA> has no information about the features, add the features to invoice and put (see admin) in the price,duration and pages.
       Please always include the invoice in table format at the end. Also Suggested additional features for the app that are not in the invoice yet. Please use markdown format for the invoice. but dont add code block \'\'\'markdown"
       </RECAP>
       `;
@@ -212,7 +223,7 @@ export default function ChatPage() {
     });
 
     const result = await finalizedInvoiceChat.sendMessage(`
-      Finalized the invoice in table format. Please use markdown format for the invoice. but dont add code block \'\'\'markdown".
+      Finalized the invoice in table format. You should base your answer from the given <DATA>. If <DATA> has no information about the features, add the features to invoice and put (see admin) in the price,duration,pages. Please use markdown format for the invoice. but dont add code block \'\'\'markdown".
       `);
 
     return result.response.text();
@@ -221,7 +232,7 @@ export default function ChatPage() {
   async function onPublish() {
     dispatch(loadingOn());
     const finalizedInvoice = await getFinalizeInvoice();
-    // console.log("finalized::", finalizedInvoice);
+    console.log("finalized::", finalizedInvoice);
     const publishInvoiceModel = getGenerativeModel(getVertexAI(), {
       model: "gemini-2.0-flash",
       systemInstruction: SYSTEM_INSTRUCTION,
@@ -230,9 +241,15 @@ export default function ChatPage() {
         responseSchema: INVOICE_SCHEMA,
       },
     });
-    const result = await publishInvoiceModel.generateContent(finalizedInvoice);
+    const result = await publishInvoiceModel.generateContent(`
+      ${finalizedInvoice}
+
+      <RECAP>
+      Please generate the invoice in JSON format. If the data is incomplete, please put (see admin) in the price,duration,pages and for category you can put Request.
+      <RECAP/>
+      `);
     const res = result.response.text();
-    // console.log("res::", res);
+    console.log("res::", res);
     storeDispatch(setInvoice(JSON.parse(res)));
     /// set history for edit
 
@@ -265,14 +282,14 @@ export default function ChatPage() {
         </nav>
       </header>
       <section className={`p-5 ${styles.chatMessages}`}>
-        {state.analyzeChunck && (
-          <article className={`flex flex-col`}>
-            <h3 className={`flex text-sm text-gray-500 `}>Analyzing...</h3>
+        {state.analysisLoading && (
+          <article className={`flex flex-col items-end`}>
+            <h3 className={`flex text-sm text-gray-500`}>Analyzing...</h3>
             <section className="flex">
-              <data className="bg-yellow-100 w-11/12 p-4 rounded-md mb-4">
-                <Markdown remarkPlugins={[remarkGfm]}>
+              <data className="bg-yellow-100 w-11/12 p-4 rounded-md mb-4 flex items-center">
+                {/* <Markdown remarkPlugins={[remarkGfm]}>
                   {state.analyzeChunck}
-                </Markdown>
+                </Markdown> */}
                 <Spinner />
               </data>
             </section>
@@ -296,7 +313,8 @@ export default function ChatPage() {
             <article key={index} className={`flex flex-col`}>
               <h3
                 className={`flex text-sm text-gray-500 ${
-                  content.role === "user" && " justify-end"
+                  (content.role === "user" || content.role === "file") &&
+                  " justify-end"
                 }`}
               >
                 {content.role === "user"
@@ -306,21 +324,45 @@ export default function ChatPage() {
                   : "Invoice AI"}
               </h3>
               <section
-                className={`flex  ${content.role === "user" && " justify-end"}`}
+                className={`flex ${
+                  (content.role === "user" || content.role === "file") &&
+                  " justify-end"
+                }`}
               >
                 <data
                   className={`${
                     content.role === "user"
                       ? "bg-blue-100 max-w-11/12"
                       : content.role === "file"
-                      ? "bg-yellow-100 w-11/12"
+                      ? "bg-yellow-100 max-w-11/12 flex items-end flex-col"
                       : "bg-green-100 w-11/12"
                   } p-4 rounded-md mb-4`}
                 >
-                  <Markdown remarkPlugins={[remarkGfm]}>
-                    {content.text}
-                  </Markdown>
-                  {/* {content.parts && <>{JSON.stringify(content.parts)}</>} */}
+                  {content.role === "file" && (
+                    <button
+                      className="text-sm"
+                      onClick={() => {
+                        dispatch(
+                          content.hide
+                            ? hideAnalysis(index)
+                            : showAnalysis(index)
+                        );
+                      }}
+                    >
+                      {content.hide ? "Show" : "Hide"}
+                    </button>
+                  )}
+                  <article
+                    className={`${
+                      content.role === "file" && content.hide
+                        ? "hidden"
+                        : "flex flex-col"
+                    }`}
+                  >
+                    <Markdown remarkPlugins={[remarkGfm]}>
+                      {content.text}
+                    </Markdown>
+                  </article>
 
                   {content.files &&
                     content.files.map((file, i) => (

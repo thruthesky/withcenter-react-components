@@ -1021,7 +1021,7 @@ export const NEW_DATA = `
         "feature": "Real name/communication company authentication",
         "amount": 1000000,
         "description": "Your date of birth and mobile phone number are verified together to verify that you are the actual person. It is cumbersome from the user's perspective and becomes a barrier to entry.",
-        "category": "Sign up/Log in",
+        "category": "9",
         "duration": "27 days",
         "pages": 10
     },
