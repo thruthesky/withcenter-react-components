@@ -93,7 +93,7 @@ To complete the task, you need to follow these steps:
 1. The user will provide what project he wants to build
 2. Provide a list of features that the user must include in the project.
 3. Ask the user if theres more feature he wants to include in the project. and list related features.
-4. Provide the total cost of the project.
+4. Provide the total amount of the project.
 5. ALWAYS include the invoice and must be in a table format at the end.
 </INSTRUCTIONS>
 
