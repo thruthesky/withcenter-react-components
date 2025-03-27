@@ -11,16 +11,16 @@ export const FEATURE_SCHEMA = Schema.object({
             description: "The description of the feature",
         }),
         amount: Schema.string({
-            description: "The amount of the feature. if not set put (see admin)",
+            description: "The amount of the feature. if not set put (contact admin)",
         }),
         duration: Schema.string({
-            description: "The duration of the feature. if not set put (see admin)",
+            description: "The duration of the feature. if not set put (contact admin)",
         }),
         category: Schema.string({
             description: "The category of the feature",
         }),
         pages: Schema.number({
-            description: "The number of pages for the feature. if not set put (see admin)",
+            description: "The number of pages for the feature. if not set put (contact admin)",
         }),
     },
 });

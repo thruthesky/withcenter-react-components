@@ -178,7 +178,7 @@ export default function ChatPage() {
       Base from the information above, add related features to the invoice.
       If the features are already in the invoice, please ignore them.
       If the features are not in the invoice, please add them to the invoice.
-      If the features has no related features, please add them to the invoice, but put (see admin) in the price and duration.
+      If the features has no related features, please add them to the invoice, but put (contact admin) in the price and duration.
 
       Base from the missing features look for the features that are not in the invoice and add them to the invoice.
 
@@ -194,7 +194,9 @@ export default function ChatPage() {
     const request: string = `
       ${message}
       <RECAP>
-      You should base your answer from the given <DATA>. If <DATA> has no information about the features, add the features to invoice and put (see admin) in the price,duration and pages.
+      You should base your answer from the given <DATA>.
+      Dont add any random price, duration and pages to features that are not available in the <DATA>. Instead if <DATA> has no information about the features, add the features to invoice and put (contact admin) in the price,duration and pages.
+      
       Please always include the invoice in table format at the end. Also Suggested additional features for the app that are not in the invoice yet. Please use markdown format for the invoice. but dont add code block \'\'\'markdown"
       </RECAP>
       `;
@@ -223,7 +225,7 @@ export default function ChatPage() {
     });
 
     const result = await finalizedInvoiceChat.sendMessage(`
-      Finalized the invoice in table format. You should base your answer from the given <DATA>. If <DATA> has no information about the features, add the features to invoice and put (see admin) in the price,duration,pages. Please use markdown format for the invoice. but dont add code block \'\'\'markdown".
+      Finalized the invoice in table format. You should base your answer from the given <DATA>. If <DATA> has no information about the features, add the features to invoice and put (contact admin) in the price,duration,pages. Total the price, duration and pages that has valid data. Please use markdown format for the invoice. but dont add code block \'\'\'markdown".
       `);
 
     return result.response.text();
@@ -245,7 +247,7 @@ export default function ChatPage() {
       ${finalizedInvoice}
 
       <RECAP>
-      Please generate the invoice in JSON format. If the data is incomplete, please put (see admin) in the price,duration,pages and for category you can put Request.
+      Please generate the invoice in JSON format. If the data is incomplete, please put (contact admin) in the price,duration,pages and for category you can put *Request*. Total the price, duration and pages that has valid data.
       <RECAP/>
       `);
     const res = result.response.text();
