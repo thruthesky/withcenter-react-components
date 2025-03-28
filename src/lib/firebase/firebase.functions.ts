@@ -1,23 +1,44 @@
 import { deleteObject, getDownloadURL, getMetadata, getStorage, ref, ref as storageRef, uploadBytesResumable, UploadTaskSnapshot } from "firebase/storage";
+import { FileData } from "firebase/vertexai";
 import { ChangeEvent } from "react";
+
+
+export interface FileUploadData extends FileData {
+    name: string;
+}
+export interface UploadImageOptions {
+    onUpload: (data: FileUploadData) => void;
+    progress?: (progress: number) => void;
+    deleteUrl?: string;
+}
+
 
 export function uploadImage(event: ChangeEvent<HTMLInputElement>, {
     onUpload,
     progress,
     deleteUrl,
-}: {
-    onUpload: (url: string) => void;
-    progress?: (progress: number) => void;
-    deleteUrl?: string;
-}) {
+}: UploadImageOptions) {
 
     const files = event.target.files;
     if (!files || files.length == 0) return;
+    uploadFile(files[0], {
+        onUpload: (data) => {
+            event.target.value = "" // Clear the input value to allow re-uploading the same file;
+            onUpload(data);
+        }, progress, deleteUrl
+    });
+}
+
+export async function uploadFile(file: File, {
+    onUpload,
+    progress,
+    deleteUrl
+}: UploadImageOptions) {
     const uploadRef = storageRef(
         getStorage(),
-        `tmp/${files[0].name}`
+        `tmp/${file.name}`
     );
-    const uploadTask = uploadBytesResumable(uploadRef, files[0]);
+    const uploadTask = uploadBytesResumable(uploadRef, file);
     uploadTask.on(
         "state_changed",
         (snapshot: UploadTaskSnapshot) => {
@@ -54,9 +75,13 @@ export function uploadImage(event: ChangeEvent<HTMLInputElement>, {
                             console.log("Uh-oh, an error occurred!", error);
                         });
                 }
-                onUpload(downloadURL);
+                onUpload({
+                    name: file.name,
+                    fileUri: downloadURL,
+                    mimeType: file.type,
+                });
 
-                event.target.value = "" // Clear the input value to allow re-uploading the same file;
+
             });
         }
     );

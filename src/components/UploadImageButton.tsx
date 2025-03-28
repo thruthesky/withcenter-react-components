@@ -1,17 +1,43 @@
-import { uploadImage } from "@/lib/firebase/firebase.functions";
+import {
+  uploadFile,
+  uploadImage,
+  UploadImageOptions,
+} from "@/lib/firebase/firebase.functions";
+import { useEffect } from "react";
 
-export default function UploadImageButton(options: {
-  onUpload: (url: string) => void;
-  progress?: (progress: number) => void;
-  deleteUrl?: string;
-  accept?: string;
-}) {
+export default function UploadImageButton(options: UploadImageOptions) {
+  useEffect(() => {
+    document.onpaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      console.log("items", items, items?.length);
+      if (!items) return;
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.kind === "file") {
+          const file = item.getAsFile();
+          if (
+            file &&
+            (file.type.startsWith("image/") || file.type.endsWith("/pdf"))
+          ) {
+            console.log("file", file);
+            uploadFile(file, options);
+          }
+        }
+      }
+    };
+    return () => {
+      // Cleanup the paste event listener when the component unmounts
+      console.log("cleanup paste event listener");
+      document.onpaste = null;
+    };
+  }, []);
+
   return (
     <div className="relative flex items-center">
       <input
         className="absolute bottom-0 left-0 right-0 top-0 text-8xl opacity-0 cursor-pointer"
         type="file"
-        accept={options.accept ?? "image/png, image/jpeg, image/jpg"}
+        accept="image/png, image/jpeg, image/jpg, application/pdf"
         onChange={(e) => uploadImage(e, options)}
       />
       <svg
