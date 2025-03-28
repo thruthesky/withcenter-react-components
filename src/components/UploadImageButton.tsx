@@ -9,7 +9,7 @@ export default function UploadImageButton(options: UploadImageOptions) {
   useEffect(() => {
     document.onpaste = (e: ClipboardEvent) => {
       const items = e.clipboardData?.items;
-      console.log("items", items, items?.length);
+      // console.log("items", items, items?.length);
       if (!items) return;
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
@@ -19,7 +19,7 @@ export default function UploadImageButton(options: UploadImageOptions) {
             file &&
             (file.type.startsWith("image/") || file.type.endsWith("/pdf"))
           ) {
-            console.log("file", file);
+            // console.log("file", file);
             uploadFile(file, options);
           }
         }
@@ -27,7 +27,7 @@ export default function UploadImageButton(options: UploadImageOptions) {
     };
     return () => {
       // Cleanup the paste event listener when the component unmounts
-      console.log("cleanup paste event listener");
+      // console.log("cleanup paste event listener");
       document.onpaste = null;
     };
   }, []);

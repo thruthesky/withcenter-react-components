@@ -8,6 +8,7 @@ import {
   ChatSession,
   Part,
   FileDataPart,
+  FileData,
 } from "firebase/vertexai";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -93,10 +94,10 @@ export default function ChatPage() {
 
     dispatch(resetPrompt());
     if (state.files.length > 0) {
-      console.log("submitFilePrompt", message);
+      // console.log("submitFilePrompt", message);
       await submitFilePrompt(message);
     } else {
-      console.log("submitFilePrompt", message);
+      // console.log("submitFilePrompt", message);
       await submitPrompt(message);
     }
   }
@@ -105,7 +106,7 @@ export default function ChatPage() {
     dispatch(analysisLoadingOn());
     const userPrompt: ChatHistory = { role: "user", text: message };
 
-    console.log("submitFilePrompt", userPrompt);
+    // console.log("submitFilePrompt", userPrompt);
 
     const parts: Array<string | Part> = [
       `
@@ -125,9 +126,12 @@ export default function ChatPage() {
       `,
     ];
 
-    for (const file of state.files) {
+    for (const file of state.files as FileUploadData[]) {
       parts.push({
-        fileData: file,
+        fileData: {
+          mimeType: file.mimeType,
+          fileUri: file.fileUri,
+        } as FileData,
       } as FileDataPart);
     }
 
@@ -146,7 +150,7 @@ export default function ChatPage() {
     });
     const result = await fileModel.generateContent(parts);
     const resultText = result.response.text();
-    console.log("res::", resultText);
+    // console.log("res::", resultText);
     const filePrompt: ChatHistory = {
       role: "file",
       text: resultText,
@@ -236,7 +240,7 @@ export default function ChatPage() {
   async function onPublish() {
     dispatch(loadingOn());
     const finalizedInvoice = await getFinalizeInvoice();
-    console.log("finalized::", finalizedInvoice);
+    // console.log("finalized::", finalizedInvoice);
     const publishInvoiceModel = getGenerativeModel(getVertexAI(), {
       model: "gemini-2.0-flash",
       systemInstruction: SYSTEM_INSTRUCTION,
@@ -323,7 +327,7 @@ export default function ChatPage() {
                 <ExtractAIBubble
                   content={content}
                   onClick={() => {
-                    console.log("onClick", content.hide);
+                    // console.log("onClick", content.hide);
                     dispatch(
                       content.hide ? hideAnalysis(index) : showAnalysis(index)
                     );
@@ -347,9 +351,7 @@ export default function ChatPage() {
         )}
         <form className="flex gap-3" onSubmit={onSubmit}>
           <UploadImageButton
-            onUpload={async (data) => (
-              console.log("onUpload", data), dispatch(addFile(data))
-            )}
+            onUpload={async (data) => dispatch(addFile(data))}
             progress={(percent) => {
               // console.log("progress", percent);
               dispatch(setProgress(percent));

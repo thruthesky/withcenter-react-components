@@ -44,7 +44,7 @@ export async function uploadFile(file: File, {
         (snapshot: UploadTaskSnapshot) => {
             const percent =
                 (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log(`Upload is ${percent}% done`);
+            // console.log(`Upload is ${percent}% done`);
             if (progress) progress(percent);
 
             switch (snapshot.state) {
