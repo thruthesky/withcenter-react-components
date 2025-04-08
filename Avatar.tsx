@@ -14,12 +14,10 @@ export default function Avatar({
   size?: number;
   iconSize?: SizeProp;
 }) {
-  const w = size + "px";
-  const h = size + "px";
   return (
     <div
-      style={{ width: w, height: h }}
-      className={clsx(`rounded-full`, `overflow-hidden`, `bg-white`)}
+      style={{ width: size + "px", height: size + "px" }}
+      className={clsx(`rounded-full`, `overflow-hidden`, `bg-gray-100`)}
     >
       {src ? (
         <Image
@@ -31,8 +29,12 @@ export default function Avatar({
       ) : (
         <FontAwesomeIcon
           icon={faUser}
-          className={`text-gray-500`}
-          style={{ width: w, height: h }}
+          className={` text-gray-500`}
+          style={{
+            width: size,
+            height: size / (size > 60 ? 1 : 1.3) + "px",
+            paddingTop: size > 60 ? ".75em" : ".5em",
+          }}
         />
       )}
     </div>
