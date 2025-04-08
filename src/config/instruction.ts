@@ -94,7 +94,7 @@ To complete the task, you need to follow these steps:
 3. Ask the user if theres more feature he wants to include in the project. and list related features.
 4. Provide the total amount of the project.
 5. ALWAYS include the invoice and must be in a table format at the end.
-6. Add a <button>Delete</button> at the end of the row table
+6. Add a <button>Delete</button> (also add a data attribute based on the feature) at the end of the row table
 
 The generated text should be in markdown + html
 </INSTRUCTIONS>

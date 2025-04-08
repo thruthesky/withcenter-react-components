@@ -214,6 +214,28 @@ export default function ChatPage() {
     await send(request);
   }
 
+  async function onDeleteFeature(feature: string): Promise<void> {
+    const userPrompt: ChatHistory = {
+      role: "user",
+      text: "Deleting the feature . . .",
+    };
+    dispatch(addChatHistory(userPrompt));
+
+    console.log("onDeleteFeature", feature);
+
+    const request: string = `
+      Delete the feature: ${feature} from the invoice.
+
+      <RECAP>
+      You should base your answer from the given <DATA>.
+      Please always include the invoice in table format at the end. Also Suggested additional features for the app that are not in the invoice yet. Please use markdown format for the invoice. but dont add code block \'\'\'markdown"
+      If the feature is not in the invoice, please ignore it.
+      If the feature is deleted recently, tell the user that the feature is deleted recently.
+      </RECAP>
+      `;
+    await send(request);
+  }
+
   async function send(request: string): Promise<void> {
     const result = await chat.current.sendMessageStream(request);
     let modelRes = "";
@@ -366,7 +388,12 @@ export default function ChatPage() {
           state.history.map((content: ChatHistory, index) => (
             <React.Fragment key={index}>
               {content.role === "user" && <UserBubble content={content} />}
-              {content.role === "model" && <InvoiceBubble content={content} />}
+              {content.role === "model" && (
+                <InvoiceBubble
+                  content={content}
+                  onDeleteFeature={onDeleteFeature}
+                />
+              )}
               {content.role === "file" && (
                 <ExtractAIBubble
                   content={content}
