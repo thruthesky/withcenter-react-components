@@ -1,5 +1,5 @@
 import {
-  uploadFile,
+  uploadFiles,
   uploadImage,
   UploadImageOptions,
 } from "@/lib/firebase/firebase.functions";
@@ -8,22 +8,29 @@ import { useEffect } from "react";
 export default function UploadImageButton(options: UploadImageOptions) {
   useEffect(() => {
     document.onpaste = (e: ClipboardEvent) => {
-      const items = e.clipboardData?.items;
-      // console.log("items", items, items?.length);
-      if (!items) return;
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        if (item.kind === "file") {
-          const file = item.getAsFile();
-          if (
-            file &&
-            (file.type.startsWith("image/") || file.type.endsWith("/pdf"))
-          ) {
-            // console.log("file", file);
-            uploadFile(file, options);
-          }
-        }
+
+      if (e.clipboardData) {
+        const items = Array.from(e.clipboardData.items)
+          .filter((item) => item.kind === "file")
+          .map((item) => item.getAsFile())
+          .filter((file): file is File => file !== null); // Filter out null values
+
+        uploadFiles(items, options);
       }
+
+      // console.log("items", items, items?.length);
+      // for (let i = 0; i < items.length; i++) {
+      //   const item = items[i];
+      //   if (item.kind === "file") {
+      //     const file = item.getAsFile();
+      //     if (
+      //       file &&
+      //       (file.type.startsWith("image/") || file.type.endsWith("/pdf"))
+      //     ) {
+      //       // console.log("file", file);
+      //       uploadFile(file, options);
+      //     }
+      //   }
     };
     return () => {
       // Cleanup the paste event listener when the component unmounts
