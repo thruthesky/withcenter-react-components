@@ -4,7 +4,7 @@ import clsx from "clsx";
 import Image, { StaticImageData } from "next/image";
 
 /**
- * @refer URL: https://127.0.0.1:3000/dev/design for details.
+ * @refer URL: http://127.0.0.1:3000/dev/design for details.
  * @param src - The source of the image.
  * @param alt - Alternative text for the image.
  * @param size - The size of the avatar.

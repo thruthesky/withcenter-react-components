@@ -12,7 +12,7 @@ export default function Spinner({
   return (
     <FontAwesomeIcon
       icon={faCircleNotch}
-      className={`spinner w-6 h-6 ${className}`}
+      className={`fa-spin w-6 h-6 ${className}`}
       size={size}
     />
   );

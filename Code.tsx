@@ -1,3 +1,3 @@
 export default function Code({ code }: { code: string }) {
-  return <data>{code}</data>;
+  return <p className="mt-5">{code}</p>;
 }
