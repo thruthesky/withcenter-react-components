@@ -264,6 +264,11 @@ export default function ChatPage() {
     return result.response.text();
   }
 
+  /*
+  * 
+  *
+  */
+
   async function onPublish() {
     dispatch(loadingOn());
     const finalizedInvoice = await getFinalizeInvoice();
@@ -459,3 +464,6 @@ export default function ChatPage() {
     </section>
   );
 }
+
+
+
