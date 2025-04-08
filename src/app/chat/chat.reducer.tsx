@@ -18,6 +18,7 @@ export interface ChatState {
   files: FileUploadData[];
   progress: number;
   analysisLoading: boolean;
+  dragging: boolean;
 }
 
 export const chatInitialState: ChatState = {
@@ -29,6 +30,7 @@ export const chatInitialState: ChatState = {
   progress: 0,
   loading: false,
   analysisLoading: false,
+  dragging: false,
 };
 
 export function chatReducer(
@@ -97,6 +99,9 @@ export function chatReducer(
       console.log("newHistory", newHistory);
       return newHistory;
     }
+    case "setDragging": {
+      return { ...state, dragging: action.dragging };
+    }
 
     case "reset":
       return chatInitialState;
@@ -159,4 +164,8 @@ export function addChatHistory(history: ChatHistory) {
 }
 export function reset() {
   return { type: "reset" };
+}
+
+export function setDragging(dragging: boolean) {
+  return { type: "setDragging", dragging };
 }

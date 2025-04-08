@@ -38,9 +38,10 @@ import {
   hideAnalysis,
   analysisLoadingOn,
   analysisLoadingOff,
+  setDragging,
 } from "./chat.reducer";
 import UploadImageButton from "@/components/UploadImageButton";
-import { FileUploadData, uploadFile } from "@/lib/firebase/firebase.functions";
+import { FileUploadData, uploadFiles } from "@/lib/firebase/firebase.functions";
 import { INVOICE_SCHEMA } from "@/config/schema";
 import {
   IMAGE_AND_PDF_EXTRACTION_INSTRUCTION,
@@ -283,32 +284,32 @@ export default function ChatPage() {
 
   function handleDropFiles(e: React.DragEvent<HTMLElement>) {
     e.preventDefault();
+    dispatch(setDragging(false));
     console.log(e.dataTransfer.files);
     const files = Array.from(e.dataTransfer.files);
 
-    if (!files) return;
-
-    files.forEach((file) => {
-      console.log(file.name);
-      uploadFile(file, {
-        onUpload: (data) => {
-          dispatch(addFile(data));
-        },
-        progress: (percent) => {
-          dispatch(setProgress(percent));
-        },
-      });
+    uploadFiles(files, {
+      onUpload: (data) => {
+        dispatch(addFile(data));
+      },
+      progress: (percent) => {
+        dispatch(setProgress(percent));
+      },
     });
   }
 
+  function handleDragOver(e: React.DragEvent<HTMLElement>) {
+    e.preventDefault();
+    dispatch(setDragging(true));
+  }
+
+  function handleDragLeave(e: React.DragEvent<HTMLElement>) {
+    e.preventDefault();
+    dispatch(setDragging(false));
+  }
+
   return (
-    <section
-      className="h-screen flex flex-col gap-4"
-      onDrop={(e) => handleDropFiles(e)}
-      onDragOver={(e) => {
-        e.preventDefault();
-      }}
-    >
+    <section className="h-screen flex flex-col gap-4">
       <header className="flex justify-between items-center p-4 bg-gray-800 text-white">
         <h1>
           <Link href="/">InvoiceGen</Link>
@@ -322,7 +323,19 @@ export default function ChatPage() {
           </button>
         </nav>
       </header>
-      <section className={`p-5 ${styles.chatMessages}`}>
+      <section
+        className={`p-5 relative ${styles.chatMessages}`}
+        onDrop={(e) => handleDropFiles(e)}
+        onDragOver={(e) => handleDragOver(e)}
+        onDragLeave={(e) => handleDragLeave(e)}
+      >
+        {state.dragging && (
+          <div className="absolute inset-0 flex items-center justify-center bg-blue-100 bg-opacity-75 z-10 h-full w-full">
+            <p className="text-blue-500 font-bold text-lg">
+              Add files or photos here
+            </p>
+          </div>
+        )}
         {state.analysisLoading && (
           <article className={`flex flex-col items-end`}>
             <h3 className={`flex text-sm text-gray-500`}>Analyzing...</h3>
