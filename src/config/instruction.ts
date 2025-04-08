@@ -68,21 +68,20 @@ Example Invoice Markdown Table
 
 #### Project Invoice without category and pages
 
-| Feature       | Description                                      | Amount     | Duration        |
-|---------------|--------------------------------------------------|------------|-----------------|
-| User Login    | Secure user login with email and password        | 100,000    | 5 days          |
-| User Profile  | User profile management                          | 800,000    | 3 days          |
-| Chat System   | Real-time chat functionality                     | 200,000    | 10 day          |
-| UI Design     | Fine UI design                                   | 100,500    | 7 days          |
-| Design Files  | All original design files in a zip file          | 500,000    | 0 days          |
-| ...           | ...                                              | ...        | ...             |
-| Total                                                            | 1,700,500  | 25 days         |
+| Feature       | Description                                      | Amount     | Duration        | Actions                 | 
+|---------------|--------------------------------------------------|------------|-----------------|-------------------------|
+| User Login    | Secure user login with email and password        | 100,000    | 5 days          | <button>Delete</button> |
+| User Profile  | User profile management                          | 800,000    | 3 days          | <button>Delete</button> |
+| Chat System   | Real-time chat functionality                     | 200,000    | 10 day          | <button>Delete</button> |
+| UI Design     | Fine UI design                                   | 100,500    | 7 days          | <button>Delete</button> |
+| Design Files  | All original design files in a zip file          | 500,000    | 0 days          | <button>Delete</button> |
+| ...           | ...                                              | ...        | ...             | <button>Delete</button> |
+| Total                                                            | 1,700,500  | 25 days         | <button>Delete</button> |
 
 **Total Amount**: 1,700,500
 
 **Total Duration**: 25 days
 `;
-
 
 export const SYSTEM_INSTRUCTION = `
 
@@ -95,6 +94,9 @@ To complete the task, you need to follow these steps:
 3. Ask the user if theres more feature he wants to include in the project. and list related features.
 4. Provide the total amount of the project.
 5. ALWAYS include the invoice and must be in a table format at the end.
+6. Add a <button>Delete</button> at the end of the row table
+
+The generated text should be in markdown + html
 </INSTRUCTIONS>
 
 <DATA>
@@ -102,10 +104,9 @@ ${NEW_DATA}
 </DATA>      
 `;
 
-
 export const PERSONA_EXTRACTION_INSTRUCTION = `
 You are an AI Web app assistant tasked with analyzing a PDF document or image to extract information relevant to building or enhancing a web application. Please follow these instructions carefully:
-`
+`;
 
 export const EXTRACTION_OUPUT_JSON = `
 4. **Output format**:
@@ -144,7 +145,6 @@ export const EXTRACTION_OUPUT_MARKDOWN = `
 | ...      | ...           | ...                                              |
 `;
 
-
 export const PDF_EXTRACTION_INSTRUCTION = `
 1. **Analyze the PDF file section by section**:
    - Identify the purpose of each section and summarize its content.
@@ -168,8 +168,6 @@ ${EXTRACTION_OUPUT_MARKDOWN}
    - If the document includes references to external tools, APIs, or frameworks, include them in the analysis.
 
 Please ensure the analysis is thorough and accurate, and focus on extracting actionable insights for web application development.`;
-
-
 
 export const IMAGE_EXTRACTION_INSTRUCTION = `
 1. **Analyze the image content**:
@@ -198,7 +196,6 @@ ${EXTRACTION_OUPUT_MARKDOWN}
    - Ensure the analysis is thorough and accurate.
    - Focus on extracting actionable insights that can directly contribute to web application development.
 `;
-
 
 export const IMAGE_AND_PDF_EXTRACTION_INSTRUCTION = `
 ${PERSONA_EXTRACTION_INSTRUCTION}
