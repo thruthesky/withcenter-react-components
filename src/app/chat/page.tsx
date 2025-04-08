@@ -40,7 +40,7 @@ import {
   analysisLoadingOff,
 } from "./chat.reducer";
 import UploadImageButton from "@/components/UploadImageButton";
-import { FileUploadData } from "@/lib/firebase/firebase.functions";
+import { FileUploadData, uploadFile } from "@/lib/firebase/firebase.functions";
 import { INVOICE_SCHEMA } from "@/config/schema";
 import {
   IMAGE_AND_PDF_EXTRACTION_INSTRUCTION,
@@ -280,26 +280,33 @@ export default function ChatPage() {
     if (!res) return;
     dispatch(removeFile(file));
   }
+
+  function handleDropFiles(e: React.DragEvent<HTMLElement>) {
+    e.preventDefault();
+    console.log(e.dataTransfer.files);
+    const files = Array.from(e.dataTransfer.files);
+
+    if (!files) return;
+
+    files.forEach((file) => {
+      console.log(file.name);
+      uploadFile(file, {
+        onUpload: (data) => {
+          dispatch(addFile(data));
+        },
+        progress: (percent) => {
+          dispatch(setProgress(percent));
+        },
+      });
+    });
+  }
+
   return (
     <section
       className="h-screen flex flex-col gap-4"
-      onDrag={(e) => {
-        const items = e.dataTransfer?.items;
-        console.log("items", items, items?.length);
-        // console.log("items", items, items?.length);
-        // if (!items) return;
-        // for (let i = 0; i < items.length; i++) {
-        //   const item = items[i];
-        //   if (item.kind === "file") {
-        //     const file = item.getAsFile();
-        //     if (
-        //       file &&
-        //       (file.type.startsWith("image/") || file.type.endsWith("/pdf"))
-        //     ) {
-        //       // console.log("file", file);
-        //       uploadFile(file, options);
-        //     }
-        //   }
+      onDrop={(e) => handleDropFiles(e)}
+      onDragOver={(e) => {
+        e.preventDefault();
       }}
     >
       <header className="flex justify-between items-center p-4 bg-gray-800 text-white">
