@@ -65,11 +65,14 @@ export default function ChatPage() {
   const chat = useRef({} as ChatSession);
   const initialized = useRef(false);
 
+  const newGeminiModel = "gemini-2.5-pro-exp-03-25";
+  // const oldGeminiModel = "gemini-2.0-flash";
+
   useEffect(() => {
     if (!initialized.current) {
       // Initialize the generative model
       model.current = getGenerativeModel(getVertexAI(), {
-        model: "gemini-2.0-flash",
+        model: newGeminiModel,
         systemInstruction: SYSTEM_INSTRUCTION,
       });
       chat.current = model.current.startChat();
@@ -141,7 +144,7 @@ export default function ChatPage() {
     dispatch(resetFiles());
 
     const fileModel = getGenerativeModel(getVertexAI(), {
-      model: "gemini-2.0-flash",
+      model: newGeminiModel,
       systemInstruction: IMAGE_AND_PDF_EXTRACTION_INSTRUCTION,
       // generationConfig: {
       //   responseMimeType: "application/json",
@@ -189,7 +192,8 @@ export default function ChatPage() {
       Base from the missing features look for the features that are not in the invoice and add them to the invoice.
 
 
-      Please always include the invoice in table format at the end. Also Suggested additional features for the app that are not in the invoice yet. Please use markdown format for the invoice. but dont add code block \'\'\'markdown"
+      Please always include the invoice in table format at the end. Also Suggested additional features for the app that are not in the invoice yet. Please use markdown format for the invoice. but dont add code block e.g. <pre>, <code> \'\'\'markdown"
+      Also make sure that the price is in KRW
       </RECAP>
       `);
   }
@@ -242,7 +246,7 @@ export default function ChatPage() {
     const finalizedInvoice = await getFinalizeInvoice();
     // console.log("finalized::", finalizedInvoice);
     const publishInvoiceModel = getGenerativeModel(getVertexAI(), {
-      model: "gemini-2.0-flash",
+      model: newGeminiModel,
       systemInstruction: SYSTEM_INSTRUCTION,
       generationConfig: {
         responseMimeType: "application/json",
@@ -277,7 +281,27 @@ export default function ChatPage() {
     dispatch(removeFile(file));
   }
   return (
-    <section className="h-screen flex flex-col gap-4">
+    <section
+      className="h-screen flex flex-col gap-4"
+      onDrag={(e) => {
+        const items = e.dataTransfer?.items;
+        console.log("items", items, items?.length);
+        // console.log("items", items, items?.length);
+        // if (!items) return;
+        // for (let i = 0; i < items.length; i++) {
+        //   const item = items[i];
+        //   if (item.kind === "file") {
+        //     const file = item.getAsFile();
+        //     if (
+        //       file &&
+        //       (file.type.startsWith("image/") || file.type.endsWith("/pdf"))
+        //     ) {
+        //       // console.log("file", file);
+        //       uploadFile(file, options);
+        //     }
+        //   }
+      }}
+    >
       <header className="flex justify-between items-center p-4 bg-gray-800 text-white">
         <h1>
           <Link href="/">InvoiceGen</Link>
