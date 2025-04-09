@@ -21,7 +21,7 @@ export default function Avatar({
   className,
   unoptimized = false,
 }: {
-  src: string;
+  src?: string;
   alt?: string;
   size?: number;
   nickname?: string;
