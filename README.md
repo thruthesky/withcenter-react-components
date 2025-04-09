@@ -191,7 +191,7 @@ Example
 - The `CameraIcon` component is a wrapper around the `FontAwesomeIcon` component.
 
 ```jsx
-import { CameraIcon } from "@/withcenter-react-components/icons/CameraIcon";
+import { CameraIcon } from "@/withcenter-react-library/icons/CameraIcon";
 
 <CameraIcon className="text-4xl text-gray-500" />;
 ```
