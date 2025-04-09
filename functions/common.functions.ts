@@ -233,3 +233,15 @@ export function veryLongDateTime(timestamp: string | number): string {
     second: "2-digit",
   });
 }
+
+/**
+ * Returns the number with commas.
+ *
+ * @param x number to be formatted
+ * @returns
+ */
+export function numberWithCommas(x: number): string {
+  const [integerPart, decimalPart] = x.toString().split(".");
+  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return decimalPart ? `${formattedInteger}.${decimalPart}` : formattedInteger;
+}

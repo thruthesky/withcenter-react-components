@@ -224,3 +224,12 @@ import { CameraIcon } from "@/withcenter-react-library/components/icons/CameraIc
 ## Quill Rich Editor
 
 - [forum.md](./forum.md) 를 참고한다.
+
+## Unit Test
+
+- To run the unit test, run the following command:
+
+```bash
+cd ./functions/
+tsx common.functions.test.ts
+```
