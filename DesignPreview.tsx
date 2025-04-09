@@ -59,7 +59,7 @@ export default function DesignPreview() {
 
       <section>
         <h1 className="font-bold text-lg">
-          See the withcenter-react-components/README.md for details
+          See the withcenter-react-library/README.md for details
         </h1>
         <Code code={`<Avatar alt="User Avatar" size={48} />`} />
         <Avatar alt="User Avatar" size={48} />
