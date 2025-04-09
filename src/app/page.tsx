@@ -14,8 +14,8 @@ export default function Home() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const prompt = formData.get("prompt") as string;
-    // router.push(`/chat?ask=${prompt}`);
-    router.push(`/chat`);
+    router.push(`/chat?ask=${prompt}`);
+    // router.push(`/chat`);
   }
   return (
     <section>
