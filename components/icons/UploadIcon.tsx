@@ -17,12 +17,10 @@ export default function UploadIcon({
   return (
     <label
       data-testid="UploadIcon"
-      htmlFor="file-upload-input"
       className={"cursor-pointer" + " " + className}
     >
       <CameraIcon className="lg:pb-2 lg:pr-2" />
       <input
-        id="file-upload-input"
         className="hidden"
         type="file"
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
