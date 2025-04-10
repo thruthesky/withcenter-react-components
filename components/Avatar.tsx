@@ -31,20 +31,6 @@ export default function Avatar({
 }) {
   const [error, setError] = useState(false);
 
-  const preview = (
-    <div
-      className={`flex items-center justify-center rounded-full bg-gray-200 text-gray-500 ${className}`}
-      style={{ width: size + "px", height: size + "px" }}
-    >
-      <FontAwesomeIcon
-        icon={faUser}
-        style={{
-          fontSize: size / 1.5 + "px",
-        }}
-      />
-    </div>
-  );
-
   if (src && !error) {
     return (
       <div
@@ -73,6 +59,18 @@ export default function Avatar({
       </div>
     );
   } else {
-    return preview;
+    return (
+      <div
+        className={`flex items-center justify-center rounded-full bg-gray-200 text-gray-500 ${className}`}
+        style={{ width: size + "px", height: size + "px" }}
+      >
+        <FontAwesomeIcon
+          icon={faUser}
+          style={{
+            fontSize: size / 1.5 + "px",
+          }}
+        />
+      </div>
+    );
   }
 }
