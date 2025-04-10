@@ -1,6 +1,7 @@
 import { faUser } from "@fortawesome/pro-light-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
+import { useState } from "react";
 
 /**
  * UserAvatar component displays a user's avatar image or a placeholder icon.
@@ -28,7 +29,23 @@ export default function Avatar({
   className?: string;
   unoptimized?: boolean;
 }) {
-  if (src) {
+  const [error, setError] = useState(false);
+
+  const preview = (
+    <div
+      className={`flex items-center justify-center rounded-full bg-gray-200 text-gray-500 ${className}`}
+      style={{ width: size + "px", height: size + "px" }}
+    >
+      <FontAwesomeIcon
+        icon={faUser}
+        style={{
+          fontSize: size / 1.5 + "px",
+        }}
+      />
+    </div>
+  );
+
+  if (src && !error) {
     return (
       <div
         style={{ width: size + "px", height: size + "px" }}
@@ -42,6 +59,7 @@ export default function Avatar({
           className={`h-full w-full rounded-full object-cover ${className}`}
           priority={false}
           unoptimized={unoptimized}
+          onError={() => setError(true)}
         />
       </div>
     );
@@ -55,18 +73,6 @@ export default function Avatar({
       </div>
     );
   } else {
-    return (
-      <div
-        className={`flex items-center justify-center rounded-full bg-gray-200 text-gray-500 ${className}`}
-        style={{ width: size + "px", height: size + "px" }}
-      >
-        <FontAwesomeIcon
-          icon={faUser}
-          style={{
-            fontSize: size / 1.5 + "px",
-          }}
-        />
-      </div>
-    );
+    return preview;
   }
 }
