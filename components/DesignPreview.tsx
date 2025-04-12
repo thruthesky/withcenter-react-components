@@ -99,6 +99,9 @@ export default function DesignPreview() {
 
         <Code code={`<TextButton>Text Button</TextButton>`} />
         <TextButton>Text Button</TextButton>
+
+        <Code code={`<TextButton loading={true}>Text Button</TextButton>`} />
+        <TextButton loading={true}>Text Button</TextButton>
       </section>
 
       <section>
