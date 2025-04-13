@@ -206,7 +206,7 @@ export function veryShortDateTime(timestamp: string | number): string {
  */
 export function longDateTime(timestamp: string | number): string {
   return new Date(timestamp).toLocaleString([], {
-    year: "2-digit",
+    year: "numeric",
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
@@ -225,7 +225,7 @@ export function longDateTime(timestamp: string | number): string {
 export function veryLongDateTime(timestamp: string | number): string {
   //  console.log("--> timestamp", timestamp);
   return new Date(timestamp).toLocaleString([], {
-    year: "2-digit",
+    year: "numeric",
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",

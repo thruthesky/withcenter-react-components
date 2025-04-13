@@ -28,7 +28,7 @@ export default function ListTile({
   onClick,
 }: ListTileProps): JSX.Element {
   const baseClasses =
-    "flex flex-col items-start gap-1 p-3 bg-slate-200 rounded cursor-pointer";
+    "mt-3 flex flex-col items-start gap-1 p-3 bg-slate-200 rounded cursor-pointer";
   const classes = `${baseClasses} ${className}`;
 
   // Determine what to display in the first line (prioritize title over translated label)
