@@ -138,6 +138,16 @@ export default function DesignPreview() {
 
         <Code code={`<Input placeholder="Enter text" />`} />
         <Input placeholder="Enter text" className="mt-2" />
+
+        <Code
+          code={`<Input label="Name" placeholder="Input name" errorMessage="This is an error" />`}
+        />
+        <Input
+          label="Name"
+          placeholder="Input name"
+          errorMessage="This is an error"
+          className="mt-2"
+        />
       </section>
 
       <section>
