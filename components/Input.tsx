@@ -32,6 +32,7 @@ export default function Input({
   value,
   defaultValue = "",
   errorMessage,
+  autoFocus,
   ref,
 }: {
   type?: string;
@@ -46,6 +47,7 @@ export default function Input({
   value?: string;
   defaultValue?: string;
   errorMessage?: string;
+  autoFocus?: boolean;
   ref?: React.Ref<HTMLInputElement>;
 }) {
   return (
@@ -63,6 +65,7 @@ export default function Input({
           defaultValue={defaultValue}
           onChange={onChange}
           onBlur={onBlur}
+          autoFocus={autoFocus}
           ref={ref}
         />
         {errorMessage && <p className="text-red-500">{errorMessage}</p>}
