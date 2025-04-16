@@ -31,7 +31,7 @@ export default function Avatar({
 }) {
   const [error, setError] = useState(false);
 
-  if (src && !error) {
+  if (src && src.startsWith("http") && !error) {
     return (
       <div
         style={{ width: size + "px", height: size + "px" }}
