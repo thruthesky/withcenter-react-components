@@ -55,6 +55,26 @@ clsx(
 >
 ```
 
+## Custom Design
+
+- The UI design is customizable by adding the styles on global css.
+- For example, you can add the following styles to the `global.css` file. And the look of buttons will be changed.
+
+```css
+.button {
+  @apply inline-block px-3 py-2 bg-blue-500 text-white rounded-md text-sm cursor-pointer;
+  &.secondary {
+    @apply bg-slate-200 text-black;
+  }
+  &.warning {
+    @apply bg-red-500 text-white;
+  }
+  &.text {
+    @apply bg-transparent text-blue-500;
+  }
+}
+```
+
 ## Button class
 
 - Use the `.button` utility class to `<button>` and `<a>` elements to make it look like a button.
@@ -232,4 +252,60 @@ import { CameraIcon } from "@/withcenter-react-library/components/components/ico
 ```bash
 cd ./functions/
 tsx common.functions.test.ts
+```
+
+## Hooks
+
+### useApi
+
+- Use `useApi` hook to call the API.
+  - It can be used to call any 3rd party API like;
+    - Firebase Database Query
+    - Any 3rd party REST API
+    - etc.
+- This help to write simple and readable code.
+- Important note:
+  - The `useApi` hook must be propertly typed or;
+    - you may have to use `as` keyword to cast the type.
+    - you need `{!! api.data && ... }` in JSX to check if the data is not null.
+
+```jsx
+import useApi from "@/withcenter-react-library/hooks/api/useApi";
+export default function FindUser() {
+  const api = useApi<Record<string, ChatUserInterface>>();
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    const { nickname } = fromFormData(e) as { nickname: string };
+    api.query(async () => {
+      const snapshot = await usersQuery(nickname);
+      console.log("snapshot", snapshot.val());
+    });
+  }
+
+  return (
+    <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
+      <input name="nickname" />
+      <SubmitButton loading={api.loading}>{t("chat.find-user")}</SubmitButton>
+      <Warning message={api.error} />
+    </form>
+      <div className="flex flex-col gap-3 mt-5">
+        {api.data && ( {/* Display data if it has data */}
+          <ul className="list-disc pl-5">
+            {Object.entries(api.data).map(([key, user]) => (
+              <li key={key}>
+                <button
+                  onClick={() => router.push(`/chat/${user.id}`)}
+                  className="text-blue-500 hover:underline"
+                >
+                  {user.nickname}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        {api.empty && ( {/* Display empty message */}
+          <p className="text-gray-500">{t("chat.no-user-found")}</p>
+        )}
+      </div>
+  );
+}
 ```

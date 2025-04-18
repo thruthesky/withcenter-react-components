@@ -45,20 +45,28 @@ export function generateRandomString(length: number): string {
 /**
  * HTML FORM 을 전송하면, event handler 에서 받는 e 를 통해서 FormData 를 가져온다.
  *
+ * Gets form data.
+ *
+ * Note: This cancels the default form submission.
+ *
  * @param e HTMLFormElement
  * @returns FormData as specified type
  *
  * @example
  * ```typescript
  * async function handleCommentSubmit(e: React.FormEvent<HTMLFormElement>): Promise<void> {
- * const { name, content } = fromFormData<{ name: string; content: string }>(e);
- * console.log(content); // content from the form
+ * const { nickname } = fromFormData(e) as { nickname: string };
+ * console.log("nickname", nickname); // nickname from the form
  * }
  * ```
  *
  */
-export function fromFormData<T>(e: React.FormEvent<HTMLFormElement>): T {
-  return Object.fromEntries(new FormData(e.currentTarget)) as T;
+export function fromFormData(
+  e: React.FormEvent<HTMLFormElement>
+): Record<string, string> {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.currentTarget));
+  return data as Record<string, string>;
 }
 
 /**
