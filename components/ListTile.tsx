@@ -25,31 +25,31 @@ interface ListTileProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 export default function ListTile({
   className = "",
   label,
-  text,
+  title,
   href,
   onClick,
   leading,
   trailing,
 }: ListTileProps): JSX.Element {
   const baseClasses =
-    "mt-3 flex flex-col items-start gap-1 p-3 bg-slate-200 rounded cursor-pointer";
+    "mt-3 w-full flex flex-col items-start gap-1 p-3 bg-slate-200 rounded cursor-pointer";
   const classes = `${baseClasses} ${className}`;
 
   // Determine what to display in the first line (prioritize title over translated label)
   const firstLine = label || "";
 
   // Determine what to display in the second line (prioritize subtitle over translated text)
-  const secondLine = text || "";
+  const secondLine = title || "";
 
   const content = (
-    <>
+    <div className="flex flex-col gap-1">
       {firstLine && (
         <div className="label text-sm font-semibold">{firstLine}</div>
       )}
       {secondLine && (
         <div className="text text-lg text-gray-600">{secondLine}</div>
       )}
-    </>
+    </div>
   );
 
   const child = (
